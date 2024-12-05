@@ -1,10 +1,10 @@
 <script setup>
 import Carousel from '@/components/Carousel.vue'
-import BannerImg from '../assets/images/banner.png'
+import HeroText from '../assets/images/hero-text.svg'
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
-const initialPageLoad = ref(true);
+const initialPageLoad = ref(true)
 
 onMounted(() => {
   setTimeout(() => {
@@ -16,15 +16,15 @@ onMounted(() => {
 <template>
   <main class="py-4">
     <div
-      class="flex justify-center transition-all duration-[1.5s] ease-in-out"
-      :class="initialPageLoad ? 'scale-[0.2] opacity-0' : 'opacity-1 scale=[1]'"
+    class="flex justify-center transition-all duration-[1.5s] ease-in-out"
+    :class="initialPageLoad ? 'scale-[0.2] opacity-0' : 'opacity-1 scale=[1]'"
     >
-      <img :src="BannerImg" alt="BannerImg" class="h-[90px] md:h-[200px] w-auto" />
+    <img :src="HeroText" alt="HeroText" class="h-[130px] md:h-[200px] w-auto" />
     </div>
     <div class="mb-[5rem] mt-[1.5rem] flex justify-center">
       <RouterLink
         to="/dashboard"
-        class="text-[80%] md:text-base bg-transparent hover:bg-white hover:text-black transition-all duration-500 ease-in-out font-medium border-2 border-white px-8 py-4 rounded-[12px]"
+        class="text-[80%] md:text-base bg-white/10 backdrop-blur-sm hover:bg-white hover:text-black transition-all duration-500 ease-in-out font-medium border border-white px-8 py-4 rounded-[12px]"
         >Create yours now</RouterLink
       >
     </div>
@@ -33,3 +33,4 @@ onMounted(() => {
     </div>
   </main>
 </template>
+

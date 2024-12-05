@@ -11,12 +11,9 @@ import Logo from '@/assets/images/logo.svg'
       <RouterLink to="/dashboard">Dashboard</RouterLink>
     </div>
     <div>
-      <RouterLink
-        to="/"
-        class="font-medium text-[1.3rem] md:text-[1.5rem] logo flex items-center gap-2"
-      >
+      <RouterLink to="/" class="text-[1.3rem] md:text-[1.5rem] logo flex items-center gap-2">
         <img :src="Logo" alt="Logo" class="h-[25px] md:h-[35px] w-auto" />
-        <span> ArtSphere </span>
+        <span class="font-medium tracking-tight"> ArtSphere </span>
       </RouterLink>
     </div>
     <div>
