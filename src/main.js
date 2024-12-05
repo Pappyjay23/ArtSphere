@@ -3,14 +3,14 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
+import { BiEyeSlashFill, BiEyeFill } from 'oh-vue-icons/icons'
 
 import App from './App.vue'
 import router from './router'
 
 const app = createApp(App)
 
-
-addIcons()
+addIcons(BiEyeSlashFill, BiEyeFill)
 app.use(createPinia())
 app.use(router)
 

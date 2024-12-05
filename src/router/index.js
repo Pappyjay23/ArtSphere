@@ -10,8 +10,13 @@ const router = createRouter({
       component: HomeView,
     },
     {
+      path: '/sign-up',
+      props: true,
+      component: () => import('../views/LoginView.vue'),
+    },
+    {
       path: '/login',
-      name: 'login',
+      props: true,
       component: () => import('../views/LoginView.vue'),
     },
     {
@@ -23,6 +28,11 @@ const router = createRouter({
       path: '/collections',
       name: 'collections',
       component: () => import('../views/CollectionsView.vue'),
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: 'not-found',
+      component: () => import('../views/NotFoundView.vue'),
     },
   ],
 })

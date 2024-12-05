@@ -24,7 +24,7 @@ onMounted(() => {
     <div class="mb-[5rem] mt-[1.5rem] flex justify-center">
       <RouterLink
         to="/dashboard"
-        class="text-[80%] md:text-base bg-white/10 backdrop-blur-sm hover:bg-white hover:text-black transition-all duration-500 ease-in-out font-medium border border-white px-8 py-4 rounded-[12px]"
+        class="text-[80%] md:text-base bg-white/10 backdrop-blur-sm hover:bg-white hover:text-black transition-all duration-500 ease-in-out font-medium border border-white/40 px-8 py-4 rounded-[12px]"
         >Create yours now</RouterLink
       >
     </div>
