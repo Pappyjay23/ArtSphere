@@ -30,7 +30,7 @@ const sliderArray = [
   </div>
 </template>
 
-<style>
+<style scoped>
 .slider {
   position: relative;
   display: flex;
