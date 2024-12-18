@@ -111,7 +111,7 @@ const closeSlider = () => {
         class="group relative overflow-hidden rounded-xl cursor-pointer"
       >
         <!-- Card Content -->
-        <div class="card-content bg-white/10 backdrop-blur-md p-6 h-full">
+        <div class="card-content bg-transparent backdrop-blur-md p-6 h-full">
           <!-- Top Section with View Button -->
           <div class="flex justify-between items-start mb-6">
             <!-- User Info -->
@@ -223,6 +223,7 @@ const closeSlider = () => {
 .card-content {
   position: relative;
   z-index: 1;
+  box-shadow: inset 0 0 10px rgba(165, 165, 165, 0.667);
 }
 
 .card-content::before {
@@ -236,14 +237,5 @@ const closeSlider = () => {
   );
   z-index: -1;
   border-radius: inherit;
-}
-
-@keyframes shine {
-  0% {
-    background-position: 200% center;
-  }
-  100% {
-    background-position: -200% center;
-  }
 }
 </style>
