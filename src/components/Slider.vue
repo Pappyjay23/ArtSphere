@@ -5,6 +5,10 @@ const props = defineProps({
   images: {
     type: Array,
     required: true
+  },
+  imageTags: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -106,17 +110,21 @@ onMounted(() => {
     <button 
       v-if="currentIndex > 0"
       @click="prevSlide" 
-      class="nav-button left-4"
+      class="nav-button left-6 group/btn"
     >
-      <v-icon name="bi-chevron-left" scale="2"></v-icon>
+      <div class="bg-white/10 backdrop-blur-md p-4 rounded-full transition-all duration-300 group-hover/btn:bg-white/20">
+        <v-icon name="bi-chevron-left" scale="1.5"></v-icon>
+      </div>
     </button>
     
     <button 
       v-if="currentIndex < images.length - 1"
       @click="nextSlide" 
-      class="nav-button right-4"
+      class="nav-button right-6 group/btn"
     >
-      <v-icon name="bi-chevron-right" scale="2"></v-icon>
+      <div class="bg-white/10 backdrop-blur-md p-4 rounded-full transition-all duration-300 group-hover/btn:bg-white/20">
+        <v-icon name="bi-chevron-right" scale="1.5"></v-icon>
+      </div>
     </button>
 
     <!-- Slider -->
@@ -134,15 +142,35 @@ onMounted(() => {
       <div 
         v-for="(image, index) in images" 
         :key="index"
-        class="slide"
+        class="slide group/slide"
         :class="{ 'active': currentIndex === index }"
       >
-        <img 
-          :src="image" 
-          :alt="`Slide ${index + 1}`"
-          class="slide-image"
-          draggable="false"
-        />
+        <!-- Image Container -->
+        <div class="relative w-full h-full overflow-hidden">
+          <img 
+            :src="image" 
+            :alt="`Slide ${index + 1}`"
+            class="slide-image transition-transform duration-500 group-hover/slide:scale-105"
+            draggable="false"
+          />
+          
+          <!-- Hover Overlay -->
+          <div class="absolute inset-0 bg-black/70 opacity-0 group-hover/slide:opacity-100 transition-opacity duration-300"></div>
+          
+          <!-- Image Tag -->
+          <div class="absolute top-0 right-0 p-6 transform translate-y-4 opacity-0 group-hover/slide:translate-y-0 group-hover/slide:opacity-100 transition-all duration-300">
+            <div class="flex items-center gap-2">
+              <!-- Tag Icon -->
+              <div class="bg-white/10 backdrop-blur-md p-2 rounded-lg">
+                <v-icon name="bi-tag" scale="1" class="text-white"></v-icon>
+              </div>
+              <!-- Tag Text -->
+              <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg">
+                <span class="text-sm font-medium">{{ props.imageTags[index] || `Collection ${index + 1}` }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -152,9 +180,11 @@ onMounted(() => {
         v-for="(_, index) in images"
         :key="index"
         @click="goToSlide(index)"
-        class="pagination-dot"
+        class="pagination-dot group/dot"
         :class="{ 'active': currentIndex === index }"
-      ></button>
+      >
+        <div class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300 group-hover/dot:bg-white/80"></div>
+      </button>
     </div>
   </div>
 </template>
@@ -165,6 +195,8 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2); 
 }
 
 .slider {
@@ -189,10 +221,9 @@ onMounted(() => {
 }
 
 .slide-image {
-  max-height: 100%;
-  max-width: 100%;
-  object-fit: contain;
-  border-radius: 0.5rem;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   pointer-events: none;
 }
 
@@ -200,46 +231,36 @@ onMounted(() => {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.5);
   border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: white;
   cursor: pointer;
-  transition: all 0.3s ease;
   z-index: 10;
-}
-
-.nav-button:hover {
-  background: rgba(0, 0, 0, 0.8);
+  transition: all 0.3s ease;
 }
 
 .pagination {
   position: absolute;
-  bottom: 1rem;
+  bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
   z-index: 10;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  border-radius: 2rem;
 }
 
 .pagination-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
+  padding: 0.5rem;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.pagination-dot.active {
+.pagination-dot.active div {
   background: white;
-  transform: scale(1.2);
+  transform: scale(1.5);
 }
 </style> 
