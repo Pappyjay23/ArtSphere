@@ -108,7 +108,7 @@ const closeSlider = () => {
         v-for="user in users"
         :key="user.id"
         @click="openUserCollections(user)"
-        class="group relative overflow-hidden rounded-xl cursor-pointer"
+        class="group relative overflow-hidden rounded-xl cursor-pointer"        
       >
         <!-- Card Content -->
         <div class="card-content bg-transparent backdrop-blur-md p-6 h-full">
@@ -116,11 +116,11 @@ const closeSlider = () => {
           <div class="flex justify-between items-start mb-6">
             <!-- User Info -->
             <div class="flex items-start space-x-4">
-              <div class="relative">
+              <div class="relative overflow-hidden rounded-xl">
                 <img
                   :src="user.avatar"
                   :alt="user.name"
-                  class="w-16 h-16 rounded-xl object-cover transform transition-transform duration-500 ease-in-out scale-[0.8] group-hover:scale-[1]"
+                  class="w-16 h-16 rounded-xl object-cover transform transition-transform duration-500 ease-in-out scale-[1] group-hover:scale-[1.2]"
                 />
                 <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/50 rounded-xl"></div>
               </div>
