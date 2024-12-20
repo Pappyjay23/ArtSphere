@@ -93,6 +93,11 @@ const closeSlider = () => {
   showSlider.value = false
   selectedUser.value = null
 }
+
+// Add this for staggered animation
+const getAnimationDelay = (index) => {
+  return `${index * 0.1}s`
+}
 </script>
 
 <template>
@@ -103,12 +108,13 @@ const closeSlider = () => {
     </div>
 
     <!-- Users Grid -->
-   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <div
-        v-for="user in users"
+        v-for="(user, index) in users"
         :key="user.id"
         @click="openUserCollections(user)"
-        class="group relative overflow-hidden rounded-xl cursor-pointer"        
+        class="group card-wrapper fade-in-up rounded-xl cursor-pointer overflow-hidden"
+        :style="{ animationDelay: getAnimationDelay(index) }"
       >
         <!-- Card Content -->
         <div class="card-content bg-transparent backdrop-blur-md p-6 h-full">
@@ -238,4 +244,19 @@ const closeSlider = () => {
   z-index: -1;
   border-radius: inherit;
 }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 1s ease-in-out forwards;
+  opacity: 0;
+}
+
 </style>

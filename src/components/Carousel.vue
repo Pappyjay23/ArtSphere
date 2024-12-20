@@ -65,8 +65,10 @@ const sliderArray = [
   height: 100%;
   transform-origin: center;
   transform-style: preserve-3d;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: inset 6px 6px 10px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
   transform: rotateY(calc((var(--position) - 1) * (360 / var(--quantity)) * 1deg)) translateZ(350px);
-  /* transform: rotateY(calc(var(--position) * 45deg)) translateZ(350px); */
   cursor: pointer;
   -webkit-box-reflect: below 2px linear-gradient(transparent, transparent, rgba(4, 4, 4, 0.267));
 }
