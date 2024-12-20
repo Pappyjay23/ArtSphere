@@ -1,13 +1,13 @@
 <script setup>
-import SliderImg1 from '../assets/images/slider-img-1.png'
-import SliderImg2 from '../assets/images/slider-img-2.png'
-import SliderImg3 from '../assets/images/slider-img-3.png'
-import SliderImg4 from '../assets/images/slider-img-4.png'
-import SliderImg5 from '../assets/images/slider-img-5.png'
-import SliderImg6 from '../assets/images/slider-img-6.png'
-import SliderImg7 from '../assets/images/slider-img-7.png'
-import SliderImg8 from '../assets/images/slider-img-8.png'
-import SliderImg9 from '../assets/images/slider-img-9.png'
+import SliderImg1 from '../assets/images/slider-img-1.webp'
+import SliderImg2 from '../assets/images/slider-img-2.webp'
+import SliderImg3 from '../assets/images/slider-img-3.webp'
+import SliderImg4 from '../assets/images/slider-img-4.webp'
+import SliderImg5 from '../assets/images/slider-img-5.webp'
+import SliderImg6 from '../assets/images/slider-img-6.webp'
+import SliderImg7 from '../assets/images/slider-img-7.webp'
+import SliderImg8 from '../assets/images/slider-img-8.webp'
+import SliderImg9 from '../assets/images/slider-img-9.webp'
 
 const sliderArray = [
   SliderImg1,
