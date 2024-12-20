@@ -24,13 +24,25 @@ onMounted(() => {
     <div class="mb-[5rem] mt-[1.5rem] flex justify-center">
       <RouterLink
         to="/dashboard"
-        class="text-[80%] md:text-base bg-white/10 backdrop-blur-sm hover:bg-white hover:text-black transition-all duration-500 ease-in-out font-medium border border-white/40 px-8 py-4 rounded-[12px]"
-        >Create yours now</RouterLink
+        class="relative group overflow-hidden text-[80%] md:text-base bg-white/5 backdrop-blur-md border border-white/30 px-8 py-4 rounded-xl transition-all duration-500"
       >
+        <span class="relative z-[2] font-medium">
+          Create yours now
+        </span>
+
+        <div class="absolute inset-0 z-[1] bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+        <div class="absolute inset-0 z-[1] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+        <div class="absolute inset-0 z-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-blue-500/50 to-purple-500/50 blur-xl"></div>
+      </RouterLink>
     </div>
     <div class="w-full overflow-x-hidden min-h-[300px]">
       <Carousel />
     </div>
   </main>
 </template>
+
+<style>
+</style>
 
