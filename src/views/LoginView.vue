@@ -1,8 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import LoginImg from '@/assets/images/sign-up-bg.jpg'
-import SignUpImg from '@/assets/images/login-bg.jpg'
+import LoginImg from '@/assets/images/sign-up-bg.webp'
+import SignUpImg from '@/assets/images/login-bg.webp'
 import Button from '@/components/Button.vue'
 import FormInput from '@/components/FormInput.vue'
 import { computed } from 'vue'
@@ -45,7 +45,7 @@ const submitForm = (e) => {
     >
       <div class="flex-1 relative">
         <div
-          class="bg-center bg-cover h-full w-full rounded-lg relative z-[2] transition-all duration-500 ease-in-out"
+          class="bg-center bg-cover bg-blue-500/30 h-full w-full rounded-lg relative z-[2] transition-all duration-500 ease-in-out"
           :style="{ backgroundImage: `url(${isSignUp ? SignUpImg : LoginImg})` }"
         ></div>
         <div class="absolute top-0 left-0 w-full h-full bg-black/20 rounded-lg z-[5]"></div>

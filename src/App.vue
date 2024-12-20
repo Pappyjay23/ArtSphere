@@ -1,8 +1,8 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import Navbar from './components/Navbar.vue'
-import AppBg1 from './assets/images/bg-img-1.jpg'
-import AppBg2 from './assets/images/bg-img.png'
+import AppBg1 from './assets/images/bg-img-1.webp'
+import AppBg2 from './assets/images/bg-img-2.webp'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
