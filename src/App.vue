@@ -1,33 +1,8 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import Navbar from './components/Navbar.vue'
-import AppBg1 from './assets/images/bg-img-1.webp'
-import AppBg2 from './assets/images/bg-img-2.webp'
-import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
-
-const homeBackgroundImages = [AppBg1, AppBg2]
-const homeBackgroundImg = ref(homeBackgroundImages[0])
-const currentImageIndex = ref(0)
-let interval
-
-onMounted(() => {
-  interval = setInterval(() => {
-    currentImageIndex.value =
-      currentImageIndex.value === homeBackgroundImages.length - 1 ? 0 : currentImageIndex.value + 1
-  }, 5000)
-})
-
-onUnmounted(() => {
-  if (interval) {
-    clearInterval(interval)
-  }
-})
-
-watch(currentImageIndex, (newIndex) => {
-  homeBackgroundImg.value = homeBackgroundImages[newIndex]
-})
 
 const route = useRoute()
 
@@ -37,12 +12,23 @@ const showNavbar = computed(() => {
 </script>
 
 <template>
-  <div
-    :style="{ backgroundImage: `url(${homeBackgroundImg})` }"
-    class="app min-h-screen h-full text-white bg-center bg-black bg-cover relative z-[1] transition-all duration-500 ease-in-out"
-  >
-    <div class="absolute top-0 left-0 min-h-screen h-full w-full bg-black/70 z-[2]"></div>
-    <div class="z-[3] relative">
+  <div class="app min-h-screen bg-black h-full text-white relative">
+    <!-- Background Overlay -->
+    <div class="absolute inset-0 bg-black/70 z-[2]"></div>
+
+    <!-- Background Video -->
+    <video 
+      autoplay 
+      loop 
+      muted 
+      playsinline
+      class="fixed inset-0 w-full h-full object-cover z-[1]"
+    >
+      <source src="@/assets/videos/bg-video-1.mp4" type="video/mp4">
+    </video>
+
+    <!-- Content -->
+    <div class="relative z-[3]">
       <Navbar v-if="showNavbar" />
       <div class="p-4 max-w-[1440px] mx-auto">
         <RouterView />
@@ -51,4 +37,3 @@ const showNavbar = computed(() => {
   </div>
 </template>
 
-<style></style>
