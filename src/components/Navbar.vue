@@ -4,11 +4,28 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import Logo from '@/assets/images/logo.svg'
 
 const isScrolled = ref(false)
+const isMenuOpen = ref(false)
 const route = useRoute()
 
+const navigationLinks = [
+  { to: '/', name: 'Home' },
+  { to: '/dashboard', name: 'Dashboard' },
+  { to: '/collections', name: 'Collections' },
+  { to: '/login', name: 'Login', class: 'nav-link-special' }
+]
+
 const handleScroll = () => {
-  // Add blur effect after scrolling down a bit
   isScrolled.value = window.scrollY > 20
+}
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+  document.body.style.overflow = isMenuOpen.value ? 'hidden' : ''
+}
+
+const closeMenu = () => {
+  isMenuOpen.value = false
+  document.body.style.overflow = ''
 }
 
 onMounted(() => {
@@ -17,51 +34,101 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  document.body.style.overflow = ''
 })
 </script>
 
 <template>
   <nav
     :class="[
-      'fixed top-0 left-0 right-0 z-40 transition-all duration-300 py-3 md:px-4 px-2',
+      'fixed top-0 left-0 right-0 z-[40] transition-all duration-300 py-3 md:px-6 px-4',
       isScrolled ? 'bg-black/70 backdrop-blur-xl shadow-lg' : 'bg-transparent'
     ]"
   >
-    <div class="max-w-[1440px] mx-auto flex justify-between items-center text-[80%] md:text-[90%]">
-      <!-- Left Links -->
-      <div class="flex items-center gap-8">
-        <RouterLink 
-          to="/dashboard" 
-          class="nav-link"
-          :class="{ 'active': route.path === '/dashboard' }"
-        >
-          Dashboard
-        </RouterLink>
-      </div>
+    <div class="max-w-[1440px] mx-auto flex justify-between items-center">
+      <!-- Menu Button -->
+      <button 
+        @click='toggleMenu' 
+        class='relative group overflow-hidden nav-menu-btn z-[60] w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full backdrop-blur-md text-white bg-purple-500/10'
+      >
+        <!-- Icon Container -->
+        <div class="relative w-5 h-3 lg:w-6 lg:h-5 flex items-center justify-center z-[2]">
+          <!-- Menu Lines -->
+          <span 
+            class="absolute w-full h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-500 ease-in-out"
+            :class="isMenuOpen ? 'rotate-45' : '-translate-y-2'"
+          ></span>
+          
+          <span 
+            class="absolute w-full h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-300 ease-in-out"
+            :class="isMenuOpen ? 'opacity-0 translate-x-3' : 'opacity-100'"
+          ></span>
+          
+          <span 
+            class="absolute w-full h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-500 ease-in-out"
+            :class="isMenuOpen ? '-rotate-45' : 'translate-y-2'"
+          ></span>
+        </div>
+
+        <!-- Hover Effects -->
+        <div class="absolute inset-0 z-[1] bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+        <div class="absolute inset-0 z-[1] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+        <div class="absolute inset-0 z-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-blue-500/50 to-purple-500/50 blur-xl"></div>
+      </button>
 
       <!-- Logo Center -->
       <RouterLink 
         to="/" 
-        class="absolute left-1/2 -translate-x-1/2 text-[1.3rem] md:text-[1.5rem] logo flex items-center gap-2 opacity-85 transition-all duration-300 ease-in-out hover:opacity-100"
+        class="text-[1.5rem] md:text-[2rem] flex items-center gap-2 opacity-85 transition-all duration-300 ease-in-out hover:opacity-100 z-[60]"
+        @click="closeMenu"
       >
         <img :src="Logo" alt="Logo" class="h-[25px] md:h-[35px] w-auto" />
         <span class="font-medium tracking-tight"> ArtSphere </span>
       </RouterLink>
 
-      <!-- Right Links -->
-      <div class="flex items-center gap-8">
-        <RouterLink 
-          to="/collections" 
-          class="nav-link"
-          :class="{ 'active': route.path === '/collections' }"
+      <!-- Placeholder for balance -->
+      <div class="w-12"></div>
+    </div>
+
+    <!-- Full Screen Menu -->
+    <div 
+      class="fixed top-0 bottom-0 left-0 min-h-screen inset-0 z-[50] transition-all duration-500"
+      :class="isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'"
+      style="margin-top: 0;"
+    >
+      <!-- Backdrop -->
+      <div 
+        class="fixed top-0 left-0 min-h-screen inset-0 bg-black/90 backdrop-blur-xl transition-all duration-700"
+        :class="isMenuOpen ? 'opacity-100' : 'opacity-0'"
+      ></div>
+
+      <!-- Menu Content -->
+      <div class="relative h-full flex flex-col items-center justify-center">
+        <div 
+          class="flex flex-col items-center gap-8 transition-all duration-700 delay-200"
+          :class="isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'"
         >
-          Collections
-        </RouterLink>
+          <RouterLink 
+            v-for="(link, index) in navigationLinks"
+            :key="index"
+            :to="link.to"
+            @click="closeMenu"
+            class="nav-link text-3xl font-light tracking-wider"
+            :class="[
+              { 'active': route.path === link.to },
+              link.class
+            ]"
+          >
+            {{ link.name }}
+          </RouterLink>
+        </div>
       </div>
     </div>
   </nav>
 
-  <!-- Spacer to prevent content from going under navbar -->
+  <!-- Spacer -->
   <div class="h-[72px]"></div>
 </template>
 
@@ -69,8 +136,8 @@ onUnmounted(() => {
 .nav-link {
   position: relative;
   padding: 0.5rem;
-  transition: all 0.3s ease;
-  opacity: 0.9;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.8;
 }
 
 .nav-link::after {
@@ -81,22 +148,46 @@ onUnmounted(() => {
   width: 0;
   height: 1px;
   background: white;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateX(-50%);
 }
 
-.nav-link:hover::after,
-.nav-link.active::after {
+.nav-link:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.nav-link:hover::after {
   width: 100%;
 }
 
 .nav-link.active {
-  color: white;
   opacity: 1;
 }
 
-.nav-link:hover {
-  color: white;
-  opacity: 1;
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* Special styling for login link */
+.nav-link-special {
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.2), rgba(147, 51, 234, 0.2));
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+.nav-link-special::after {
+  display: none;
+}
+
+.nav-link-special:hover {
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3));
+  transform: translateY(-2px);
+}
+
+.nav-menu-btn{
+  box-shadow: inset 3px 3px 10px rgba(255,255,255,0.5)
 }
 </style>
