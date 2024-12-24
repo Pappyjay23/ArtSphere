@@ -162,7 +162,7 @@ const getAnimationDelay = (index) => {
             <div
               v-for="(image, index) in user.collections.slice(0, 4)"
               :key="index"
-              class="relative aspect-[4/3] overflow-hidden rounded-lg transform transition-transform duration-500 ease-in-out scale-[0.97] group-hover:scale-[1]"
+              class="relative aspect-[4/3] overflow-hidden rounded-lg transform transition-transform duration-500 ease-in-out scale-[0.97] group-hover:scale-[1] border border-white/20 bg-purple-500/20" 
             >
               <img
                 :src="image"
