@@ -22,9 +22,10 @@ const showNavbar = computed(() => {
       loop 
       muted 
       playsinline
+      preload="auto"
       class="fixed inset-0 w-full h-full object-cover z-[1]"
     >
-      <source src="@/assets/videos/bg-video-1.mp4" type="video/mp4">
+      <source src="@/assets/videos/bg-video.mp4" type="video/mp4">
     </video>
 
     <!-- Content -->
