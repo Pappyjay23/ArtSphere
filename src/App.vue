@@ -3,6 +3,7 @@ import { RouterView } from 'vue-router'
 import Navbar from './components/Navbar.vue'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import BgImage from './assets/images/bg-video-image.webp'
 
 const route = useRoute()
 
@@ -15,6 +16,9 @@ const showNavbar = computed(() => {
   <div class="app min-h-screen bg-black h-full text-white relative">
     <!-- Background Overlay -->
     <div class="absolute inset-0 bg-black/70 z-[2]"></div>
+
+    <!-- Background Image -->
+    <img :src="BgImage" alt="Background image" class='fixed w-full h-full object-cover'>
 
     <!-- Background Video -->
     <video 
