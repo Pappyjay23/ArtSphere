@@ -27,7 +27,7 @@ const showNavbar = computed(() => {
       muted 
       playsinline
       preload="auto"
-      class="fixed inset-0 w-full h-full object-cover z-[1]"
+      class="fixed inset-0 w-full h-full object-cover z-[1] hidden lg:block"
     >
       <source src="@/assets/videos/bg-video.mp4" type="video/mp4">
     </video>
