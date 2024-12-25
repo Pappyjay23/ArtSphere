@@ -52,21 +52,21 @@ onUnmounted(() => {
         class='relative group overflow-hidden nav-menu-btn z-[60] w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full backdrop-blur-md text-white bg-purple-500/10'
       >
         <!-- Icon Container -->
-        <div class="relative w-5 h-3 lg:w-6 lg:h-5 flex items-center justify-center z-[2]">
+        <div class="relative w-5 h-3 lg:w-6 lg:h-5 flex items-center z-[2]">
           <!-- Menu Lines -->
           <span 
-            class="absolute w-full h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-500 ease-in-out"
-            :class="isMenuOpen ? 'rotate-45' : '-translate-y-2'"
+            class="absolute h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-500 ease-in-out"
+            :class="isMenuOpen ? 'rotate-45 w-full' : '-translate-y-2 w-[40%]'"
           ></span>
           
           <span 
-            class="absolute w-full h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-300 ease-in-out"
-            :class="isMenuOpen ? 'opacity-0 translate-x-3' : 'opacity-100'"
+            class="absolute h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-300 ease-in-out"
+            :class="isMenuOpen ? 'opacity-0 translate-x-3 w-full' : 'opacity-100 w-full'"
           ></span>
           
           <span 
-            class="absolute w-full h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-500 ease-in-out"
-            :class="isMenuOpen ? '-rotate-45' : 'translate-y-2'"
+            class="absolute h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-500 ease-in-out"
+            :class="isMenuOpen ? '-rotate-45 w-full' : 'translate-y-2 w-[60%]'"
           ></span>
         </div>
 
@@ -95,19 +95,19 @@ onUnmounted(() => {
     <!-- Full Screen Menu -->
     <div 
       class="fixed top-0 bottom-0 left-0 min-h-screen inset-0 z-[50] transition-all duration-500"
-      :class="isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'"
+      :class="isMenuOpen ? 'opacity-100 visible' : 'opacity-0 lg:opacity-100 invisible pointer-events-none'"
       style="margin-top: 0;"
     >
       <!-- Backdrop -->
       <div 
-        class="fixed top-0 left-0 min-h-screen inset-0 bg-black/90 backdrop-blur-xl transition-all duration-700"
-        :class="isMenuOpen ? 'opacity-100' : 'opacity-0'"
+        class="fixed top-0 left-0 inset-0 bg-black/90 backdrop-blur-xl transition-all duration-1000 delay-[430] ease-in-out"
+        :class="isMenuOpen ? 'opacity-100 scale-[2] h-full w-full lg:h-[200vh] lg:w-[200vh]' : 'opacity-100 h-[300vh] w-[300vh] translate-x-[-50%] translate-y-[-50%] rounded-full origin-top-left scale-[0] delay-500'"
       ></div>
 
       <!-- Menu Content -->
       <div class="relative h-full flex flex-col items-center justify-center">
         <div 
-          class="flex flex-col items-center gap-8 transition-all duration-700 delay-200"
+          class="flex flex-col items-center gap-8 transition-all duration-700 delay-200 ease-in-out"
           :class="isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'"
         >
           <RouterLink 
