@@ -8,7 +8,7 @@ import BgImage from './assets/images/bg-video-image.webp'
 const route = useRoute()
 
 const showNavbar = computed(() => {
-  return !['/login', '/sign-up'].includes(route.path)
+  return !['/login', '/sign-up', '/:catchAll(.*)'].includes(route.path) && route.name !== 'not-found'
 })
 </script>
 
