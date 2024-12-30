@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { useNavbarStore } from '../stores/navbar'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,6 +36,19 @@ const router = createRouter({
       component: () => import('../views/NotFoundView.vue'),
     },
   ],
+})
+
+// Add navigation guard
+router.beforeEach((to, from, next) => {
+  const navbarStore = useNavbarStore()
+
+  if (['/login', '/sign-up'].includes(to.path) || to.name === 'not-found') {
+    navbarStore.hideNavbar()
+  } else {
+    navbarStore.showNavbar()
+  }
+
+  next()
 })
 
 export default router

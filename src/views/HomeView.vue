@@ -24,7 +24,7 @@ onMounted(() => {
     <div class="mb-[5rem] mt-[1.5rem] flex justify-center">
       <RouterLink
         to="/dashboard"
-        class="relative group overflow-hidden text-[80%] md:text-base bg-white/5 backdrop-blur-md border border-white/30 px-8 py-4 rounded-xl transition-all duration-500"
+        class="relative group overflow-hidden text-[80%] md:text-base bg-white/5 backdrop-blur-md border border-white/30 px-8 py-6 rounded-[4rem] transition-all duration-500 shadow-[inset_3px_3px_10px_rgba(255,255,255,0.5)]"
       >
         <span class="relative z-[2] font-medium">
           Create yours now
