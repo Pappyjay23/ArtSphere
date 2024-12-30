@@ -17,6 +17,7 @@ import {
   BiHeart,
   BiEye,
   BiClockHistory,
+  MdKeyboardbackspaceTwotone,
 } from 'oh-vue-icons/icons'
 
 import App from './App.vue'
@@ -38,6 +39,7 @@ addIcons(
   BiHeart,
   BiEye,
   BiClockHistory,
+  MdKeyboardbackspaceTwotone,
 )
 app.use(createPinia())
 app.use(router)
