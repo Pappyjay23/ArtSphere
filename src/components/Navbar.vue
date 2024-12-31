@@ -94,13 +94,13 @@ onUnmounted(() => {
 
     <!-- Full Screen Menu -->
     <div 
-      class="fixed top-0 bottom-0 left-0 min-h-screen inset-0 z-[50] transition-all duration-500"
+      class="fixed top-0 left-0 min-h-screen inset-0 z-[50] transition-all duration-500"
       :class="isMenuOpen ? 'opacity-100 visible' : 'opacity-0 lg:opacity-100 invisible pointer-events-none'"
       style="margin-top: 0;"
     >
       <!-- Backdrop -->
       <div 
-        class="fixed top-0 left-0 inset-0 bg-black/90 backdrop-blur-xl transition-all duration-1000 delay-[430] ease-in-out"
+        class="fixed top-0 left-0 min-h-screen inset-0 bg-black/90 backdrop-blur-xl transition-all duration-1000 delay-[430] ease-in-out"
         :class="isMenuOpen ? 'opacity-100 scale-[2] h-full w-full lg:h-[200vh] lg:w-[200vh]' : 'opacity-100 h-[300vh] w-[300vh] translate-x-[-50%] translate-y-[-50%] rounded-full origin-top-left scale-[0] delay-500'"
       ></div>
 
