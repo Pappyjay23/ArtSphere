@@ -41,23 +41,28 @@ const submitForm = (e) => {
 <template>
   <div class="flex justify-center items-center h-screen">
     <div
-      class="h-[90%] w-[90%] bg-blue-900/30 backdrop-blur-[10px] rounded-lg flex justify-center gap-5 p-4"
+      class="login-container h-fit lg:h-[90%] w-[90%] md:w-[70%] lg:w-[90%] bg-blue-900/30 shadow-[inset_2px_2px_8px_4px_rgba(255,255,255,0.3)] lg:shadow-none backdrop-blur-[10px] rounded-lg flex justify-center gap-5 p-2 lg:p-4"
     >
-      <div class="flex-1 relative">
+      <div class="flex-1 relative hidden lg:block">
         <div
           class="bg-center bg-cover bg-blue-500/30 h-full w-full rounded-lg relative z-[2] transition-all duration-500 ease-in-out"
           :style="{ backgroundImage: `url(${isSignUp ? SignUpImg : LoginImg})` }"
         ></div>
         <div class="absolute top-0 left-0 w-full h-full bg-black/20 rounded-lg z-[5]"></div>
       </div>
-      <div class="bg-transparent flex-1 py-[3rem]">
-        <div class="flex flex-col w-[70%] mx-auto">
-          <h1 class="text-[1.9rem] font-medium tracking-tight transition-all duration-500 ease-in-out">
-            {{ isSignUp ? 'Create an account' : 'Log in to your account' }}
+      <div class="bg-transparent flex-1 py-[1.5rem] lg:py-[3rem] px-4">
+        <div class="flex flex-col w-full lg:w-[70%] mx-auto">
+          <h1
+            class="text-[1.5rem] lg:text-[1.9rem] font-bold tracking-tight transition-all duration-500 ease-in-out"
+          >
+            {{ isSignUp ? 'Create an account' : 'Welcome back' }}
           </h1>
           <p class="text-[80%] pt-3 transition-all duration-500 ease-in-out">
             {{ isSignUp ? 'Already have an account?' : "Don't have an account?" }}
-            <RouterLink :to="isSignUp ? '/login' : '/sign-up'" class="text-blue-500 underline transition-all duration-500 ease-in-out">
+            <RouterLink
+              :to="isSignUp ? '/login' : '/sign-up'"
+              class="text-blue-500 underline transition-all duration-500 ease-in-out"
+            >
               {{ isSignUp ? 'Log in' : 'Sign up' }}
             </RouterLink>
           </p>
@@ -100,3 +105,11 @@ const submitForm = (e) => {
     </div>
   </div>
 </template>
+
+<style>
+@media screen and (min-width: 2000px) {
+  .login-container {
+    height: 60% !important;
+  }
+}
+</style>
