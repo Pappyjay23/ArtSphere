@@ -12,12 +12,10 @@ const router = createRouter({
     },
     {
       path: '/sign-up',
-      props: true,
       component: () => import('../views/LoginView.vue'),
     },
     {
       path: '/login',
-      props: true,
       component: () => import('../views/LoginView.vue'),
     },
     {

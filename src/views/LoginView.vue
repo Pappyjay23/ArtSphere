@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import LoginImg from '@/assets/images/sign-up-bg.webp'
 import SignUpImg from '@/assets/images/login-bg.webp'
-import Button from '@/components/Button.vue'
+import Button from '@/components/FormButton.vue'
 import FormInput from '@/components/FormInput.vue'
 import { computed } from 'vue'
 
