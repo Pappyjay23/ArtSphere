@@ -18,10 +18,36 @@ const toggleShowPassword = () => {
 }
 
 const formValues = ref({
+  fullname: '',
   username: '',
   email: '',
   password: '',
+  profileImage: null,
 })
+
+const imagePreview = ref(null)
+const imageError = ref('')
+
+const handleImageUpload = (e) => {
+  const file = e.target.files[0]
+  if (file) {
+    if (file.size > 5 * 1024 * 1024) {
+      imageError.value = 'Image size should be less than 5MB'
+      return
+    }
+    imageError.value = ''
+    formValues.value.profileImage = file
+    imagePreview.value = URL.createObjectURL(file)
+  }
+}
+
+const removeImage = () => {
+  formValues.value.profileImage = null
+  imagePreview.value = null
+  imageError.value = ''
+  const fileInput = document.querySelector('#profile-image-input')
+  if (fileInput) fileInput.value = ''
+}
 
 const submitForm = (e) => {
   e.preventDefault()
@@ -29,10 +55,13 @@ const submitForm = (e) => {
 
   setTimeout(() => {
     formValues.value = {
+      fullname: '',
       username: '',
       email: '',
       password: '',
+      profileImage: null,
     }
+    imagePreview.value = null
     router.push('/')
   }, 500)
 }
@@ -68,6 +97,66 @@ const submitForm = (e) => {
           </p>
 
           <form @submit="submitForm" class="pt-[2rem] flex flex-col gap-4">
+            <div v-if="isSignUp" class="flex flex-col items-center mb-6">
+              <label
+                for="profile-image-input"
+                class="group flex flex-col items-center gap-2 cursor-pointer"
+              >
+                <div class="w-24 h-24 rounded-full border-2 border-blue-500 overflow-hidden">
+                  <div
+                    class="w-full h-full flex items-center justify-center bg-white/20 group-hover:bg-black/10 transition-all duration-500 ease-in-out"
+                  >
+                    <img
+                      v-if="imagePreview"
+                      :src="imagePreview"
+                      alt="Profile preview"
+                      class="w-full h-full object-cover"
+                    />
+                    <div v-else class="flex flex-col items-center text-gray-200">
+                      <v-icon name="bi-person-fill" scale="2"></v-icon>
+                    </div>
+                  </div>
+                </div>
+
+                <span class="text-sm text-gray-300 flex items-center gap-2">
+                  <template v-if="imagePreview">
+                    <span class="flex items-center gap-1">
+                      <v-icon name="bi-pencil-fill" scale="0.8"></v-icon>
+                      Change photo
+                    </span>
+                    <button
+                      type="button"
+                      @click.prevent.stop="removeImage"
+                      class="text-red-400 hover:text-red-300 flex items-center gap-1"
+                    >
+                      <v-icon name="bi-trash-fill" scale="0.8"></v-icon>
+                      Remove
+                    </button>
+                  </template>
+                  <template v-else>
+                    <v-icon name="bi-plus-circle" scale="0.8"></v-icon>
+                    Add profile picture
+                  </template>
+                </span>
+              </label>
+
+              <input
+                type="file"
+                id="profile-image-input"
+                class="hidden"
+                accept="image/*"
+                @change="handleImageUpload"
+              />
+
+              <span v-if="imageError" class="text-red-400 text-sm mt-2">{{ imageError }}</span>
+            </div>
+
+            <FormInput
+              v-if="isSignUp"
+              v-model="formValues.fullname"
+              type="text"
+              placeholder="Full Name"
+            />
             <FormInput
               v-if="isSignUp"
               v-model="formValues.username"
