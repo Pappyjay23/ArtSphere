@@ -6,10 +6,13 @@ import SignUpImg from '@/assets/images/login-bg.webp'
 import Button from '@/components/FormButton.vue'
 import FormInput from '@/components/FormInput.vue'
 import { computed } from 'vue'
+import useAuth from '@/composables/useAuth'
 
-const showPassword = ref(false)
+const { signup, login, error, loading } = useAuth()
 const router = useRouter()
 const route = useRoute()
+
+const showPassword = ref(false)
 
 const isSignUp = computed(() => route.path === '/sign-up')
 
@@ -49,21 +52,55 @@ const removeImage = () => {
   if (fileInput) fileInput.value = ''
 }
 
-const submitForm = (e) => {
-  e.preventDefault()
-  console.log(formValues.value)
+const formatErrorMessage = (error) => {
+  const errorCode = error.code || error.message || 'unknown';
+  switch (errorCode) {
+    case 'auth/invalid-credential':
+      return 'Invalid credentials. Please try again.';
+    case 'auth/user-not-found':
+      return 'No user found with this email.';
+    case 'auth/wrong-password':
+      return 'Incorrect password. Please try again.';
+    // Add more cases as needed
+    default:
+      return 'An error occurred. Please try again.';
+  }
+}
 
-  setTimeout(() => {
-    formValues.value = {
+const submitForm = async (e) => {
+  e.preventDefault()
+  error.value = '' // Clear any previous errors
+
+  try {
+    if (isSignUp.value) {
+      await signup({
+        email: formValues.value.email,
+        password: formValues.value.password,
+        fullname: formValues.value.fullname,
+        username: formValues.value.username,
+        profileImage: formValues.value.profileImage,
+      })
+    } else {
+      await login(formValues.value.email, formValues.value.password)
+    }
+
+    // Only redirect if no errors occurred
+    router.push('/')
+  } catch (err) {
+    console.error('Form submission error:', err)
+    error.value = formatErrorMessage(err)
+    formValues.value ={
       fullname: '',
       username: '',
       email: '',
       password: '',
       profileImage: null,
     }
-    imagePreview.value = null
-    router.push('/')
-  }, 500)
+
+    setTimeout(() => {
+      error.value = ''
+    }, 2000)
+  }
 }
 </script>
 
@@ -95,6 +132,7 @@ const submitForm = (e) => {
               {{ isSignUp ? 'Log in' : 'Sign up' }}
             </RouterLink>
           </p>
+          <span v-if="error" class="text-red-400 text-sm my-2 transition-all duration-500 ease-in-out">{{ error }}</span>
 
           <form @submit="submitForm" class="pt-[2rem] flex flex-col gap-4">
             <div v-if="isSignUp" class="flex flex-col items-center mb-6">
@@ -187,7 +225,13 @@ const submitForm = (e) => {
               </span>
             </div>
 
-            <Button :text="isSignUp ? 'Create account' : 'Log in'" type="submit" />
+            <Button
+              :text="loading ? '' : (isSignUp ? 'Create account' : 'Log in')"
+              type="submit"
+              :disabled="loading"
+            >
+              <div v-if="loading" class="loader"></div>
+            </Button>
           </form>
         </div>
       </div>
@@ -200,5 +244,20 @@ const submitForm = (e) => {
   .login-container {
     height: 60% !important;
   }
+}
+
+/* Loader styles */
+.loader {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>
