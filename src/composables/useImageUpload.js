@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 
+// Upload image to ImgBB - https://imgbb.com/
 const useImageUpload = () => {
   const error = ref(null)
   const loading = ref(false)
