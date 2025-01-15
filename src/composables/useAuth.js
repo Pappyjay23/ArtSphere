@@ -13,9 +13,20 @@ const user = ref(auth.currentUser)
 const error = ref(null)
 const loading = ref(false)
 
+// Load user from localStorage if available
+const storedUser = localStorage.getItem('user')
+if (storedUser) {
+  user.value = JSON.parse(storedUser)
+}
+
 // Update user state when auth state changes
 auth.onAuthStateChanged((_user) => {
   user.value = _user
+  if (_user) {
+    localStorage.setItem('user', JSON.stringify(_user))
+  } else {
+    localStorage.removeItem('user')
+  }
 })
 
 const useAuth = () => {
@@ -96,6 +107,7 @@ const useAuth = () => {
 
     try {
       const { user: authUser } = await signInWithEmailAndPassword(auth, email, password)
+      localStorage.setItem('user', JSON.stringify(authUser))
       error.value = null
       return authUser
     } catch (err) {
@@ -111,6 +123,7 @@ const useAuth = () => {
     error.value = null
     try {
       await signOut(auth)
+      localStorage.removeItem('user')
       error.value = null
     } catch (err) {
       console.error('Logout error:', err)
