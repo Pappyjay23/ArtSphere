@@ -1,6 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { useNavbarStore } from '../stores/navbar'
+import DashboardView from '@/views/DashboardView.vue'
+import CollectionsView from '@/views/CollectionsView.vue'
+import LoginView from '@/views/LoginView.vue'
+import useAuth from '@/composables/useAuth'
+
+const { user } = useAuth()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,23 +18,23 @@ const router = createRouter({
     },
     {
       path: '/sign-up',
-      props: true,
-      component: () => import('../views/LoginView.vue'),
+      component: LoginView,
     },
     {
       path: '/login',
-      props: true,
-      component: () => import('../views/LoginView.vue'),
+      component: LoginView,
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: () => import('../views/DashboardView.vue'),
+      component: DashboardView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/collections',
       name: 'collections',
-      component: () => import('../views/CollectionsView.vue'),
+      component: CollectionsView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/:catchAll(.*)',
@@ -36,6 +42,9 @@ const router = createRouter({
       component: () => import('../views/NotFoundView.vue'),
     },
   ],
+  scrollBehavior() {
+    return { top: 0 }
+  }
 })
 
 // Add navigation guard
@@ -48,7 +57,11 @@ router.beforeEach((to, from, next) => {
     navbarStore.showNavbar()
   }
 
-  next()
+  if (to.matched.some(record => record.meta.requiresAuth) && !user.value) {
+    next({ path: '/login' })
+  } else {
+    next()
+  }
 })
 
 export default router
