@@ -49,7 +49,6 @@ const useAuth = () => {
           imageUrl = await uploadImage(profileImage)
         } catch (imgError) {
           console.error('Image upload failed:', imgError)
-          // Continue with signup but without image
         }
       }
 
