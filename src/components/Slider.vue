@@ -148,7 +148,7 @@ onMounted(() => {
         <!-- Image Container -->
         <div class="relative w-full h-full overflow-hidden">
           <img 
-            :src="image" 
+            :src="image.url" 
             :alt="`Slide ${index + 1}`"
             class="slide-image transition-transform duration-500 group-hover/slide:scale-105"
             draggable="false"
@@ -166,7 +166,7 @@ onMounted(() => {
               </div>
               <!-- Tag Text -->
               <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg">
-                <span class="text-sm font-medium">{{ props.imageTags[index] || `Collection ${index + 1}` }}</span>
+                <span class="text-sm font-medium">{{ props.imageTags[index].tag || `Image ${index + 1}` }}</span>
               </div>
             </div>
           </div>

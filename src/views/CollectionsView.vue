@@ -221,7 +221,7 @@ const getAnimationDelay = (index) => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .grid {
   grid-auto-rows: minmax(min-content, max-content);
 }

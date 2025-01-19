@@ -9,7 +9,7 @@ defineProps({
 <template>
   <button
     :type="type"
-    class="bg-blue-500 px-5 py-4 rounded-[4px] text-[80%] w-full transition-all duration-500 ease-in-out flex justify-center items-center"
+    class="bg-blue-500 px-5 py-4 rounded-[4px] text-[80%] w-full transition-all duration-500 ease-in-out flex justify-center items-center outline-none border-0"
   >
     {{ text }}<slot></slot>
   </button>
