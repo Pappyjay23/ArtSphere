@@ -8,21 +8,24 @@ import MiniMenu from '@/components/MiniMenu.vue'
 import CollectionsList from '@/components/CollectionsList.vue'
 import AddCollectionForm from '@/components/AddCollectionForm.vue'
 import AddImageModal from '@/components/AddImageModal.vue'
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
+import Loader from '@/components/Loader.vue'
 import { v4 as uuidv4 } from 'uuid'
 
 const { user } = useAuth()
-const { collections, fetchCollections, createCollection, error, loading } = useCollections()
+const { collections, fetchUserCollections, createCollection, updateCollection, deleteCollection, error, loading } = useCollections()
 
 const showAddImageModal = ref(false)
 const showSlider = ref(false)
 const selectedCollection = ref(null)
+const showConfirmDeleteModal = ref(false)
+const collectionToDelete = ref(null)
 
 const showAddCollectionForm = ref(false)
 
 const toggleAddCollectionForm = (value) => {
   showAddCollectionForm.value = value
 }
-
 
 const newImages = ref([])
 const newTags = ref([])
@@ -33,8 +36,8 @@ const newCollectionName = ref('')
 
 const handleImageUpload = (e) => {
   const files = Array.from(e.target.files)
-  if (newImages.value.length + files.length > 5) {
-    imageError.value = 'You can only add up to 5 images'
+  if (newImages.value.length + files.length > 3) {
+    imageError.value = 'You can only add up to 3 images'
     return
   }
   files.forEach((file) => {
@@ -50,16 +53,18 @@ const handleImageUpload = (e) => {
   imageError.value = ''
 }
 
-const removeImage = (imageId) => {
-  newImages.value = newImages.value.filter(image => image.id !== imageId)
-  imagePreviews.value = imagePreviews.value.filter(preview => preview.id !== imageId)
-  newTags.value = newTags.value.filter(tag => tag.id !== imageId)
+const removeImage = (index) => {
+  newImages.value.splice(index, 1)
+  imagePreviews.value.splice(index, 1)
+  newTags.value.splice(index, 1)
 }
 
 const updateTag = ({ imageId, tag }) => {
   const tagIndex = newTags.value.findIndex(t => t.id === imageId)
   if (tagIndex !== -1) {
     newTags.value[tagIndex].tag = tag
+  } else {
+    console.error('Tag index out of bounds')
   }
 }
 
@@ -82,7 +87,7 @@ const submitNewCollection = async () => {
     newTags.value = []
     imagePreviews.value = []
     showAddCollectionForm.value = false
-    await fetchCollections(user.value.email)
+    await fetchUserCollections(user.value.email)
   } catch (err) {
     console.error('Add collection error:', err)
   }
@@ -98,9 +103,36 @@ const closeSlider = () => {
   selectedCollection.value = null
 }
 
+const handleShowAddImageModal = (collection) => {
+  selectedCollection.value = collection
+  showAddImageModal.value = true
+}
+
+const handleDeleteCollection = async (collectionId) => {
+  collectionToDelete.value = collectionId
+  showConfirmDeleteModal.value = true
+}
+
+const confirmDeleteCollection = async () => {
+  try {
+    await deleteCollection(user.value, collectionToDelete.value)
+    await fetchUserCollections(user.value.email)
+  } catch (err) {
+    console.error('Delete collection error:', err)
+  } finally {
+    showConfirmDeleteModal.value = false
+    collectionToDelete.value = null
+  }
+}
+
+const cancelDeleteCollection = () => {
+  showConfirmDeleteModal.value = false
+  collectionToDelete.value = null
+}
+
 onMounted(() => {
   if (user.value) {
-    fetchCollections(user.value.email)
+    fetchUserCollections(user.value.email)
   }
 })
 
@@ -110,20 +142,25 @@ const submitNewImage = async () => {
     return
   }
 
-  const newImage = {
-    userId: user.value.uid,
-    image: newImages.value[0],
-    tag: newTags.value[0],
-    createdAt: new Date().toISOString(),
-  }
+  const newImagesData = newImages.value.map((image, index) => ({
+    id: image.id,
+    file: image.file,
+    tag: newTags.value[index].tag,
+  }))
 
   try {
-    await createCollection(user.value.uid, newImage)
+    const updatedCollection = {
+      ...selectedCollection.value,
+      images: [...selectedCollection.value.images, ...newImagesData],
+      tags: [...selectedCollection.value.tags, ...newTags.value.map(tag => ({ id: tag.id, tag: tag.tag }))],
+    }
+
+    await updateCollection(user.value, updatedCollection)
     newImages.value = []
     newTags.value = []
     imagePreviews.value = []
     showAddImageModal.value = false
-    await fetchCollections(user.value.uid)
+    await fetchUserCollections(user.value.email)
   } catch (err) {
     console.error('Add image error:', err)
   }
@@ -135,7 +172,6 @@ const stats = computed(() => [
   { title: 'Total Collections', value: collections.value.length, icon: 'bi-collection' },
   { title: 'Total Images', value: collections.value.reduce((acc, col) => acc + col.images.length, 0), icon: 'bi-images' },
 ])
-
 
 </script>
 
@@ -154,7 +190,7 @@ const stats = computed(() => [
     <MiniMenu :showAddCollectionForm="showAddCollectionForm" @update="toggleAddCollectionForm" />
 
     <CollectionsList v-if="!showAddCollectionForm" :collections="collections" :hasCollections="hasCollections"
-      @openCollectionSlider="openCollectionSlider" @toggleAddCollectionForm="toggleAddCollectionForm" />
+      @openCollectionSlider="openCollectionSlider" @toggleAddCollectionForm="toggleAddCollectionForm" @showAddImageModal="handleShowAddImageModal" @deleteCollection="handleDeleteCollection" />
 
     <AddCollectionForm v-if="showAddCollectionForm" v-model:newCollectionName="newCollectionName"
       :imagePreviews="imagePreviews" :imageError="imageError" :loading="loading" @handleImageUpload="handleImageUpload"
@@ -162,7 +198,9 @@ const stats = computed(() => [
 
     <AddImageModal v-if="showAddImageModal" :newImages="newImages" :newTags="newTags" :imagePreviews="imagePreviews"
       :imageError="imageError" :loading="loading" @handleImageUpload="handleImageUpload" @removeImage="removeImage"
-      @submitNewImage="submitNewImage" @close="showAddImageModal = false" />
+      @updateTag="updateTag" @submitNewImage="submitNewImage" @close="showAddImageModal = false" />
+
+    <ConfirmDeleteModal :show="showConfirmDeleteModal" :loading="loading" message="Are you sure you want to delete this collection?" @confirm="confirmDeleteCollection" @cancel="cancelDeleteCollection" />
 
     <!-- Slider Modal -->
     <div v-if="showSlider" v-show="showSlider"
@@ -199,24 +237,4 @@ const stats = computed(() => [
 
 <style>
 /* Add any additional styles if needed */
-
-/* Loader styles */
-.loader {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #fff;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
 </style>

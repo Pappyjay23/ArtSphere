@@ -1,7 +1,8 @@
 <script setup>
 import FormButton from '@/components/FormButton.vue'
+import Loader from '@/components/Loader.vue'
 
-defineProps({
+const props = defineProps({
   newImages: {
     type: Array,
     required: true
@@ -24,7 +25,7 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['handleImageUpload', 'removeImage', 'submitNewImage', 'close'])
+const emit = defineEmits(['handleImageUpload', 'removeImage', 'updateTag', 'submitNewImage', 'close'])
 
 const handleImageUpload = (event) => {
   emit('handleImageUpload', event)
@@ -34,43 +35,57 @@ const removeImage = (index) => {
   emit('removeImage', index)
 }
 
+const updateTag = (index, tag) => {
+  emit('updateTag', { index, tag })
+}
+
 const submitNewImage = () => {
-  emit('submitNewImage')
+  emit('submitNewImage', {
+    images: props.newImages,
+    tags: props.newTags
+  })
 }
 </script>
 
 <template>
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-blue-900/30 backdrop-blur-[10px] rounded-lg p-6 w-full max-w-lg">
-      <h2 class="text-xl font-semibold mb-4">Add New Image to Collection</h2>
+      <h2 class="text-xl font-semibold mb-4">Add New Images to Collection</h2>
       <form @submit.prevent="submitNewImage" class="space-y-4">
-        <div class="flex gap-4">
-          <div class="flex-1">
-            <label for="image-upload" class="block text-sm font-medium text-gray-300">Upload Image</label>
-            <input type="file" id="image-upload" accept="image/*" @change="handleImageUpload"
-              class="mt-1 block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/20 file:text-blue-700 hover:file:bg-blue-500/30" />
-            <span v-if="imageError" class="text-red-400 text-sm mt-2">{{ imageError }}</span>
-          </div>
-          <div class="flex-1">
-            <label for="tag" class="block text-sm font-medium text-gray-300">Tag Name</label>
-            <input type="text" id="tag" v-model="newTags[0]"
-              class="mt-1 block w-full px-3 py-2 bg-white/20 text-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="Enter tag name" />
+        <div>
+          <label for="image-upload" class="block text-sm font-medium text-gray-300 w-fit">
+            <div class="flex gap-2 mb-4 text-[80%] md:text-[95%]">
+              <span>Upload Images</span>
+              <span class="text-gray-400">(Max 5 images)</span>
+            </div>
+            <div
+              class="bg-blue-500/20 bg-blur-lg text-white text-lg py-3 px-5 rounded-[2rem] shadow-[inset_3px_3px_10px_rgba(255,255,255,0.5)] scale-[0.9] hover:scale-[1] transition-all duration-500 ease-in-out w-fit cursor-pointer">
+              <span class="font-semibold text-[70%] md:text-[80%]">Add Images</span>
+            </div>
+          </label>
+          <input type="file" id="image-upload" accept="image/*" multiple @change="handleImageUpload" class="hidden" />
+          <span v-if="imageError" class="text-red-400 text-sm mt-2">{{ imageError }}</span>
+        </div>
+
+        <!-- Image Previews -->
+        <div v-for="(preview, index) in props.imagePreviews" :key="index" class="flex items-center gap-4 mt-4">
+          <img :src="preview.url" alt="Image Preview" class="w-20 h-20 rounded-md object-cover" />
+          <div class="flex flex-col gap-3 items-start">
+            <input type="text" class="w-full rounded-[6px] border-0 outline-none p-2 text-sm bg-white/10"
+              placeholder="Tag name" @input="updateTag(index, $event.target.value)" />
+            <button type="button" @click="removeImage(index)"
+              class="py-1 px-2 transition-all duration-300 ease-in-out bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 outline-none">
+              <v-icon name="md-delete-round" scale="1"></v-icon>
+            </button>
           </div>
         </div>
-        <div v-if="imagePreviews[0]" class="flex items-center gap-4 mt-4">
-          <img :src="imagePreviews[0]" alt="Image Preview" class="w-24 h-24 rounded-md object-cover" />
-          <button type="button" @click="removeImage(0)"
-            class="py-2 px-4 bg-red-500 text-white font-semibold rounded-md shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-            Remove Image
-          </button>
-        </div>
-        <FormButton :text="loading ? '' : 'Add Image'" type="submit" :disabled="loading">
-          <div v-if="loading" class="loader"></div>
+        <FormButton :text="props.loading ? '' : 'Add Images'" type="submit"
+          :disabled="props.loading || props.newImages.length >= 3">
+          <Loader v-if="props.loading" />
         </FormButton>
       </form>
       <button @click="$emit('close')"
-        class="mt-4 w-full py-2 px-4 bg-gray-500 text-white font-semibold rounded-md shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+        class="mt-4 w-full py-4 px-5 bg-gray-500 text-white text-[80%] rounded-[4px] hover:bg-gray-600 outline-none border-0 transition-all duration-300 ease-in-out">
         Cancel
       </button>
     </div>
@@ -79,24 +94,4 @@ const submitNewImage = () => {
 
 <style scoped>
 /* Add any additional styles if needed */
-
-/* Loader styles */
-.loader {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid #fff;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
 </style>

@@ -12,16 +12,31 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['openCollectionSlider', 'toggleAddCollectionForm'])
+const emit = defineEmits(['openCollectionSlider', 'toggleAddCollectionForm', 'showAddImageModal', 'deleteCollection'])
 
 const openCollectionSlider = (collection) => {
   emit('openCollectionSlider', collection)
+}
+
+const showAddImageModal = (collection) => {
+  emit('showAddImageModal', collection)
+}
+
+const handleCardClick = (event, collection) => {
+  if (event.target.closest('.action-button')) {
+    return
+  }
+  openCollectionSlider(collection)
+}
+
+const handleDeleteCollection = (collectionId) => {
+  emit('deleteCollection', collectionId)
 }
 </script>
 
 <template>
   <div v-if="hasCollections" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    <div v-for="(collection, index) in collections" :key="index" @click="openCollectionSlider(collection)"
+    <div v-for="(collection, index) in collections" :key="index" @click="(event) => handleCardClick(event, collection)"
       class="group card-wrapper fade-in-up rounded-xl cursor-pointer overflow-hidden"
       :style="{ animationDelay: `${index * 0.1}s` }">
       <!-- Card Content -->
@@ -33,25 +48,29 @@ const openCollectionSlider = (collection) => {
             <div class="relative overflow-hidden rounded-xl">
               <img :src="collection.userProfileImage" :alt="collection.userName"
                 class="w-12 h-12 rounded-xl object-cover transform transition-transform duration-500 ease-in-out scale-[1] group-hover:scale-[1.2]" />
-              <div
-                class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/50 rounded-xl">
+              <div class="absolute inset-0 border border-white/50 rounded-xl">
               </div>
             </div>
-           
+            <div class="flex flex-col gap-1">
+              <span class="text-[90%] font-medium">{{ collection.userFullName }}</span>
+              <span class="text-[80%]">{{ collection.userName }}</span>
+            </div>
           </div>
 
           <div class="flex gap-2 items-center max-w-fit">
             <!-- Add Images Button -->
             <div
-              class="relative z-10 flex flex-wrap items-center space-x-2 bg-white/10 py-2 px-3 rounded-lg border border-white/20">
+              class="relative z-20 flex flex-wrap items-center space-x-2 bg-white/10 py-2 px-3 rounded-lg border border-white/20 action-button"
+              @click="showAddImageModal(collection)">
               <v-icon name="bi-plus-circle" scale="1" class="text-blue-400"></v-icon>
               <span class="text-[80%] font-medium hidden xl:flex">Add Images</span>
             </div>
 
             <!-- Delete Collection Button -->
             <div
-              class="relative z-10 flex items-center space-x-2 bg-white/10 py-2 px-3 rounded-lg border border-white/20">
-              <v-icon name="md-delete-round" scale="1" class="text-red-400"></v-icon>
+              class="relative z-20 flex items-center space-x-2 bg-white/10 py-2 px-3 rounded-lg border border-white/20 action-button"
+              @click="handleDeleteCollection(collection.id)">
+              <v-icon name="md-delete-round" scale="1" class="text-red-500"></v-icon>
               <span class="text-[80%] font-medium hidden xl:flex">Delete</span>
             </div>
           </div>
@@ -61,7 +80,7 @@ const openCollectionSlider = (collection) => {
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-lg">
             <v-icon name="bi-images" scale="1" class="text-blue-400"></v-icon>
-            <span class="text-xs text-white/80">{{ collection.images.length }} images</span>
+            <span class="text-xs text-white/80">{{ collection.images.length }} {{ collection.images.length < 2 ? 'image' : 'images' }}</span>
           </div>
           <div class="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-lg">
             <v-icon name="bi-clock-history" scale="1" class="text-purple-400"></v-icon>

@@ -1,9 +1,19 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import Slider from '@/components/Slider.vue'
+import useCollections from '@/composables/useCollections'
+import CollectionsList from '@/components/CollectionsList.vue'
 
 const showSlider = ref(false)
 const selectedUser = ref(null)
+
+const { collections, fetchAllCollections, error, loading } = useCollections()
+
+onMounted(() => {
+  fetchAllCollections()
+})
+
+const hasCollections = computed(() => collections.value.length > 0)
 
 const users = ref([
   {
@@ -109,13 +119,9 @@ const getAnimationDelay = (index) => {
 
     <!-- Users Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div
-        v-for="(user, index) in users"
-        :key="user.id"
-        @click="openUserCollections(user)"
+      <div v-for="(user, index) in users" :key="user.id" @click="openUserCollections(user)"
         class="group card-wrapper fade-in-up rounded-xl cursor-pointer overflow-hidden"
-        :style="{ animationDelay: getAnimationDelay(index) }"
-      >
+        :style="{ animationDelay: getAnimationDelay(index) }">
         <!-- Card Content -->
         <div class="card-content bg-transparent backdrop-blur-md p-6 h-full">
           <!-- Top Section with View Button -->
@@ -123,12 +129,9 @@ const getAnimationDelay = (index) => {
             <!-- User Info -->
             <div class="flex items-start space-x-4">
               <div class="relative overflow-hidden rounded-xl">
-                <img
-                  :src="user.avatar"
-                  :alt="user.name"
-                  class="w-16 h-16 rounded-xl object-cover transform transition-transform duration-500 ease-in-out scale-[1] group-hover:scale-[1.2]"
-                />
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/50 rounded-xl"></div>
+                <img :src="user.avatar" :alt="user.name"
+                  class="w-16 h-16 rounded-xl object-cover transform transition-transform duration-500 ease-in-out scale-[1] group-hover:scale-[1.2]" />
+                <div class="absolute inset-0  border border-white/50 rounded-xl"></div>
               </div>
               <div>
                 <h3 class="font-semibold text-lg text-white/90">{{ user.name }}</h3>
@@ -149,7 +152,8 @@ const getAnimationDelay = (index) => {
           <div class="flex items-center justify-between mb-6">
             <div class="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-lg">
               <v-icon name="bi-images" scale="1" class="text-blue-400"></v-icon>
-              <span class="text-xs text-white/80">{{ user.collections.length }} images</span>
+              <span class="text-xs text-white/80">{{ user.collections.length }} {{ user.collections.length < 2 ? 'image'
+                : 'images' }}</span>
             </div>
             <div class="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-lg">
               <v-icon name="bi-people" scale="1" class="text-purple-400"></v-icon>
@@ -159,65 +163,50 @@ const getAnimationDelay = (index) => {
 
           <!-- Preview Images Grid -->
           <div class="grid grid-cols-2 gap-3">
-            <div
-              v-for="(image, index) in user.collections.slice(0, 4)"
-              :key="index"
-              class="relative aspect-[4/3] overflow-hidden rounded-lg transform transition-transform duration-500 ease-in-out scale-[0.97] group-hover:scale-[1] border border-white/20 bg-purple-500/20" 
-            >
-              <img
-                :src="image"
-                :alt="`Collection ${index + 1}`"
-                class="w-full h-full object-cover"
-              />
+            <div v-for="(image, index) in user.collections.slice(0, 4)" :key="index"
+              class="relative aspect-[4/3] overflow-hidden rounded-lg transform transition-transform duration-500 ease-in-out scale-[0.97] group-hover:scale-[1] border border-white/20 bg-purple-500/20">
+              <img :src="image" :alt="`Collection ${index + 1}`" class="w-full h-full object-cover" />
               <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
           </div>
 
           <!-- Hover Overlay -->
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Slider Modal -->
-    <div
-      v-if="showSlider"
-      v-show="showSlider"
-      class="fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center"
-      @click.self="closeSlider"
-    >
+    <div v-if="showSlider" v-show="showSlider"
+      class="fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center" @click.self="closeSlider">
       <div class="w-full max-w-6xl p-4">
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
           <div class="flex items-center space-x-3">
-            <img
-              :src="selectedUser?.avatar"
-              :alt="selectedUser?.name"
-              class="w-12 h-12 rounded-full "
-            />
+            <img :src="selectedUser?.avatar" :alt="selectedUser?.name" class="w-12 h-12 rounded-full " />
             <div>
               <h3 class="font-semibold text-xl">{{ selectedUser?.name }}</h3>
               <p class="text-sm text-gray-400">{{ selectedUser?.username }}</p>
             </div>
           </div>
-          <button
-            @click="closeSlider"
-            class="p-2 hover:bg-white/10 rounded-full transition-colors"
-          >
+          <button @click="closeSlider" class="p-2 hover:bg-white/10 rounded-full transition-colors">
             <v-icon name="bi-x-lg" scale="1.5"></v-icon>
           </button>
         </div>
 
         <!-- Slider -->
         <div class="h-[70vh]">
-          <Slider
-            v-if="selectedUser"
-            :images="selectedUser.collections"
-            :image-tags="selectedUser.imageTags"
-          />
+          <Slider v-if="selectedUser" :images="selectedUser.collections" :image-tags="selectedUser.imageTags" />
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="py-8">
+    <h1 class="text-lg md:text-2xl font-semibold mb-8">All Collections</h1>
+    <CollectionsList :collections="collections" :hasCollections="hasCollections" />
   </div>
 </template>
 
@@ -236,11 +225,9 @@ const getAnimationDelay = (index) => {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    45deg,
-    rgba(59, 130, 246, 0.1),
-    rgba(147, 51, 234, 0.1)
-  );
+  background: linear-gradient(45deg,
+      rgba(59, 130, 246, 0.1),
+      rgba(147, 51, 234, 0.1));
   z-index: -1;
   border-radius: inherit;
 }
@@ -249,6 +236,7 @@ const getAnimationDelay = (index) => {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -258,5 +246,4 @@ const getAnimationDelay = (index) => {
   animation: fadeInUp 1s ease-in-out forwards;
   opacity: 0;
 }
-
 </style>

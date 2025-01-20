@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import FormButton from '@/components/FormButton.vue'
+import Loader from '@/components/Loader.vue'
 
 const props = defineProps({
     newCollectionName: {
@@ -59,7 +60,7 @@ const collectionName = computed({
             </div>
             <div>
                 <label for="image-upload" class="block text-sm font-medium text-gray-300 w-fit">
-                    <div class="flex gap-2 mb-4 text-[80%] md:text-base">
+                    <div class="flex gap-2 mb-4 text-[80%] md:text-[95%]">
                         <span>Upload Images</span>
                         <span class="text-gray-400">(Max 5 images)</span>
                     </div>
@@ -86,7 +87,7 @@ const collectionName = computed({
             </div>
 
             <FormButton :text="loading ? '' : 'Add Collection'" type="submit" :disabled="loading">
-                <div v-if="loading" class="loader"></div>
+                <Loader v-if="loading" />
             </FormButton>
         </form>
     </div>
@@ -94,24 +95,4 @@ const collectionName = computed({
 
 <style scoped>
 /* Add any additional styles if needed */
-
-/* Loader styles */
-.loader {
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top: 4px solid #fff;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
 </style>
