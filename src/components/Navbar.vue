@@ -227,6 +227,11 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.navbar {
+  position: relative;
+  z-index: 30; /* Ensure the navbar is below the slider */
+}
+
 .nav-link {
   position: relative;
   padding: 0.5rem;

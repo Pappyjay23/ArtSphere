@@ -63,7 +63,7 @@ const handleDeleteCollection = (collectionId) => {
               class="relative z-20 flex flex-wrap items-center space-x-2 bg-white/10 py-2 px-3 rounded-lg border border-white/20 action-button"
               @click="showAddImageModal(collection)">
               <v-icon name="bi-plus-circle" scale="1" class="text-blue-400"></v-icon>
-              <span class="text-[80%] font-medium hidden xl:flex">Add Images</span>
+              <span class="text-[80%] font-medium hidden ">Add Images</span>
             </div>
 
             <!-- Delete Collection Button -->
@@ -71,7 +71,7 @@ const handleDeleteCollection = (collectionId) => {
               class="relative z-20 flex items-center space-x-2 bg-white/10 py-2 px-3 rounded-lg border border-white/20 action-button"
               @click="handleDeleteCollection(collection.id)">
               <v-icon name="md-delete-round" scale="1" class="text-red-500"></v-icon>
-              <span class="text-[80%] font-medium hidden xl:flex">Delete</span>
+              <span class="text-[80%] font-medium hidden ">Delete</span>
             </div>
           </div>
         </div>

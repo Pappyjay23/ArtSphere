@@ -20,6 +20,7 @@ const showSlider = ref(false)
 const selectedCollection = ref(null)
 const showConfirmDeleteModal = ref(false)
 const collectionToDelete = ref(null)
+const imageToDelete = ref(null)
 
 const showAddCollectionForm = ref(false)
 
@@ -36,8 +37,8 @@ const newCollectionName = ref('')
 
 const handleImageUpload = (e) => {
   const files = Array.from(e.target.files)
-  if (newImages.value.length + files.length > 3) {
-    imageError.value = 'You can only add up to 3 images'
+  if (newImages.value.length + files.length > 5) {
+    imageError.value = 'You can only add up to 5 images'
     return
   }
   files.forEach((file) => {
@@ -130,6 +131,45 @@ const cancelDeleteCollection = () => {
   collectionToDelete.value = null
 }
 
+const deleteImage = (imageId) => {
+  imageToDelete.value = imageId
+  showConfirmDeleteModal.value = true
+}
+
+const confirmDeleteImage = async () => {
+  if (!selectedCollection.value || !imageToDelete.value) return
+
+  const updatedImages = selectedCollection.value.images.filter(image => image.id !== imageToDelete.value)
+  const updatedTags = selectedCollection.value.tags.filter(tag => tag.id !== imageToDelete.value)
+
+  const updatedCollection = {
+    ...selectedCollection.value,
+    images: updatedImages,
+    tags: updatedTags,
+  }
+
+  try {
+    await updateCollection(user.value, updatedCollection)
+    selectedCollection.value = updatedCollection
+    showSlider.value = false
+    selectedCollection.value = null
+    await fetchUserCollections(user.value.email) // Add this line to update collections in real-time
+  } catch (err) {
+    console.error('Delete image error:', err)
+  } finally {
+    showConfirmDeleteModal.value = false
+    imageToDelete.value = null
+  }
+}
+
+const confirmDelete = async () => {
+  if (collectionToDelete.value) {
+    await confirmDeleteCollection()
+  } else if (imageToDelete.value) {
+    await confirmDeleteImage()
+  }
+}
+
 onMounted(() => {
   if (user.value) {
     fetchUserCollections(user.value.email)
@@ -190,7 +230,9 @@ const stats = computed(() => [
     <MiniMenu :showAddCollectionForm="showAddCollectionForm" @update="toggleAddCollectionForm" />
 
     <CollectionsList v-if="!showAddCollectionForm" :collections="collections" :hasCollections="hasCollections"
-      @openCollectionSlider="openCollectionSlider" @toggleAddCollectionForm="toggleAddCollectionForm" @showAddImageModal="handleShowAddImageModal" @deleteCollection="handleDeleteCollection" />
+      @openCollectionSlider="openCollectionSlider" @toggleAddCollectionForm="toggleAddCollectionForm" 
+      @showAddImageModal="handleShowAddImageModal" @deleteCollection="handleDeleteCollection" 
+      :currentUser="user" />
 
     <AddCollectionForm v-if="showAddCollectionForm" v-model:newCollectionName="newCollectionName"
       :imagePreviews="imagePreviews" :imageError="imageError" :loading="loading" @handleImageUpload="handleImageUpload"
@@ -200,11 +242,11 @@ const stats = computed(() => [
       :imageError="imageError" :loading="loading" @handleImageUpload="handleImageUpload" @removeImage="removeImage"
       @updateTag="updateTag" @submitNewImage="submitNewImage" @close="showAddImageModal = false" />
 
-    <ConfirmDeleteModal :show="showConfirmDeleteModal" :loading="loading" message="Are you sure you want to delete this collection?" @confirm="confirmDeleteCollection" @cancel="cancelDeleteCollection" />
+    <ConfirmDeleteModal :show="showConfirmDeleteModal" :loading="loading" message="Are you sure you want to delete this item?" @confirm="confirmDelete" @cancel="cancelDeleteCollection" class="z-50" />
 
     <!-- Slider Modal -->
     <div v-if="showSlider" v-show="showSlider"
-      class="fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center" @click.self="closeSlider">
+      class="fixed inset-0 bg-black/95 z-40 flex flex-col items-center justify-center" @click.self="closeSlider">
       <div class="w-full max-w-6xl p-4">
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
@@ -228,7 +270,7 @@ const stats = computed(() => [
 
         <!-- Slider -->
         <div class="h-[70vh]">
-          <Slider v-if="selectedCollection" :images="selectedCollection.images" :image-tags="selectedCollection.tags" />
+          <Slider v-if="selectedCollection" :images="selectedCollection.images" :image-tags="selectedCollection.tags" @deleteImage="deleteImage" />
         </div>
       </div>
     </div>
