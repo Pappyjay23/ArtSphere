@@ -13,7 +13,15 @@ import Loader from '@/components/Loader.vue'
 import { v4 as uuidv4 } from 'uuid'
 
 const { user } = useAuth()
-const { collections, fetchUserCollections, createCollection, updateCollection, deleteCollection, error, loading } = useCollections()
+const {
+  collections,
+  fetchUserCollections,
+  createCollection,
+  updateCollection,
+  deleteCollection,
+  error,
+  loading,
+} = useCollections()
 
 const showAddImageModal = ref(false)
 const showSlider = ref(false)
@@ -61,7 +69,7 @@ const removeImage = (index) => {
 }
 
 const updateTag = ({ imageId, tag }) => {
-  const tagIndex = newTags.value.findIndex(t => t.id === imageId)
+  const tagIndex = newTags.value.findIndex((t) => t.id === imageId)
   if (tagIndex !== -1) {
     newTags.value[tagIndex].tag = tag
   } else {
@@ -77,8 +85,8 @@ const submitNewCollection = async () => {
 
   const newCollection = {
     name: newCollectionName.value,
-    images: newImages.value.map(image => ({ id: image.id, file: image.file })),
-    tags: newTags.value.map(tag => ({ id: tag.id, tag: tag.tag })),
+    images: newImages.value.map((image) => ({ id: image.id, file: image.file })),
+    tags: newTags.value.map((tag) => ({ id: tag.id, tag: tag.tag })),
   }
 
   try {
@@ -139,8 +147,10 @@ const deleteImage = (imageId) => {
 const confirmDeleteImage = async () => {
   if (!selectedCollection.value || !imageToDelete.value) return
 
-  const updatedImages = selectedCollection.value.images.filter(image => image.id !== imageToDelete.value)
-  const updatedTags = selectedCollection.value.tags.filter(tag => tag.id !== imageToDelete.value)
+  const updatedImages = selectedCollection.value.images.filter(
+    (image) => image.id !== imageToDelete.value,
+  )
+  const updatedTags = selectedCollection.value.tags.filter((tag) => tag.id !== imageToDelete.value)
 
   const updatedCollection = {
     ...selectedCollection.value,
@@ -192,7 +202,10 @@ const submitNewImage = async () => {
     const updatedCollection = {
       ...selectedCollection.value,
       images: [...selectedCollection.value.images, ...newImagesData],
-      tags: [...selectedCollection.value.tags, ...newTags.value.map(tag => ({ id: tag.id, tag: tag.tag }))],
+      tags: [
+        ...selectedCollection.value.tags,
+        ...newTags.value.map((tag) => ({ id: tag.id, tag: tag.tag })),
+      ],
     }
 
     await updateCollection(user.value, updatedCollection)
@@ -210,18 +223,29 @@ const hasCollections = computed(() => collections.value.length > 0)
 
 const stats = computed(() => [
   { title: 'Total Collections', value: collections.value.length, icon: 'bi-collection' },
-  { title: 'Total Images', value: collections.value.reduce((acc, col) => acc + col.images.length, 0), icon: 'bi-images' },
+  {
+    title: 'Total Images',
+    value: collections.value.reduce((acc, col) => acc + col.images.length, 0),
+    icon: 'bi-images',
+  },
 ])
-
 </script>
 
 <template>
   <div class="py-8">
     <div class="mb-8 flex items-center gap-4">
-      <img :src="user?.photoURL" alt="Profile Photo" class="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover" />
+      <img
+        :src="user?.photoURL"
+        alt="Profile Photo"
+        class="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover"
+      />
       <div>
-        <h1 class="text-lg md:text-2xl font-semibold mb-2">Welcome back, {{ user?.displayName }}!</h1>
-        <p class="text-gray-400 text-[80%] md:text-base">Here's what's happening with your collections</p>
+        <h1 class="text-lg md:text-2xl font-semibold mb-2">
+          Welcome back, {{ user?.displayName }}!
+        </h1>
+        <p class="text-gray-400 text-[80%] md:text-base">
+          Here's what's happening with your collections
+        </p>
       </div>
     </div>
 
@@ -229,35 +253,73 @@ const stats = computed(() => [
 
     <MiniMenu :showAddCollectionForm="showAddCollectionForm" @update="toggleAddCollectionForm" />
 
-    <CollectionsList v-if="!showAddCollectionForm" :collections="collections" :hasCollections="hasCollections"
-      @openCollectionSlider="openCollectionSlider" @toggleAddCollectionForm="toggleAddCollectionForm" 
-      @showAddImageModal="handleShowAddImageModal" @deleteCollection="handleDeleteCollection" 
-      :currentUser="user" />
+    <CollectionsList
+      v-if="!showAddCollectionForm"
+      :collections="collections"
+      :hasCollections="hasCollections"
+      :currentUser="user"
+      :isCollectionsRoute="false"
+      @openCollectionSlider="openCollectionSlider"
+      @toggleAddCollectionForm="toggleAddCollectionForm"
+      @showAddImageModal="handleShowAddImageModal"
+      @deleteCollection="handleDeleteCollection"
+    />
 
-    <AddCollectionForm v-if="showAddCollectionForm" v-model:newCollectionName="newCollectionName"
-      :imagePreviews="imagePreviews" :imageError="imageError" :loading="loading" @handleImageUpload="handleImageUpload"
-      @removeImage="removeImage" @updateTag="updateTag" @submitNewCollection="submitNewCollection" />
+    <AddCollectionForm
+      v-if="showAddCollectionForm"
+      v-model:newCollectionName="newCollectionName"
+      :imagePreviews="imagePreviews"
+      :imageError="imageError"
+      :loading="loading"
+      @handleImageUpload="handleImageUpload"
+      @removeImage="removeImage"
+      @updateTag="updateTag"
+      @submitNewCollection="submitNewCollection"
+    />
 
-    <AddImageModal v-if="showAddImageModal" :newImages="newImages" :newTags="newTags" :imagePreviews="imagePreviews"
-      :imageError="imageError" :loading="loading" @handleImageUpload="handleImageUpload" @removeImage="removeImage"
-      @updateTag="updateTag" @submitNewImage="submitNewImage" @close="showAddImageModal = false" />
+    <AddImageModal
+      v-if="showAddImageModal"
+      :newImages="newImages"
+      :newTags="newTags"
+      :imagePreviews="imagePreviews"
+      :imageError="imageError"
+      :loading="loading"
+      @handleImageUpload="handleImageUpload"
+      @removeImage="removeImage"
+      @updateTag="updateTag"
+      @submitNewImage="submitNewImage"
+      @close="showAddImageModal = false"
+    />
 
-    <ConfirmDeleteModal :show="showConfirmDeleteModal" :loading="loading" message="Are you sure you want to delete this item?" @confirm="confirmDelete" @cancel="cancelDeleteCollection" class="z-50" />
+    <ConfirmDeleteModal
+      :show="showConfirmDeleteModal"
+      :loading="loading"
+      message="Are you sure you want to delete this item?"
+      @confirm="confirmDelete"
+      @cancel="cancelDeleteCollection"
+      class="z-50"
+    />
 
     <!-- Slider Modal -->
-    <div v-if="showSlider" v-show="showSlider"
-      class="fixed inset-0 bg-black/95 z-40 flex flex-col items-center justify-center" @click.self="closeSlider">
+    <div
+      v-if="showSlider"
+      v-show="showSlider"
+      class="fixed inset-0 bg-black/95 z-40 flex flex-col items-center justify-center"
+      @click.self="closeSlider"
+    >
       <div class="w-full max-w-6xl p-4">
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
           <div class="flex items-center space-x-3">
-            <img :src="selectedCollection?.userProfileImage" :alt="selectedCollection?.name"
-              class="w-12 h-12 rounded-full object-cover" />
+            <img
+              :src="selectedCollection?.userProfileImage"
+              :alt="selectedCollection?.name"
+              class="w-12 h-12 rounded-full object-cover"
+            />
             <div>
               <h3 class="font-semibold text-xl">{{ selectedCollection?.userFullName }}</h3>
               <p class="text-sm text-gray-400">{{ selectedCollection?.userName }}</p>
             </div>
-
           </div>
           <div>
             <h3 class="font-semibold text-xl">{{ selectedCollection?.name }}</h3>
@@ -270,7 +332,14 @@ const stats = computed(() => [
 
         <!-- Slider -->
         <div class="h-[70vh]">
-          <Slider v-if="selectedCollection" :images="selectedCollection.images" :image-tags="selectedCollection.tags" @deleteImage="deleteImage" />
+          <Slider
+            v-if="selectedCollection"
+            :images="selectedCollection.images"
+            :imageTags="selectedCollection.tags"
+            :currentUser="user"
+            :collectionOwnerEmail="selectedCollection.userEmail"
+            @deleteImage="deleteImage"
+          />
         </div>
       </div>
     </div>

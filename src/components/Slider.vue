@@ -4,12 +4,20 @@ import { ref, onMounted } from 'vue'
 const props = defineProps({
   images: {
     type: Array,
-    required: true
+    required: true,
   },
   imageTags: {
     type: Array,
-    default: () => []
-  }
+    required: true,
+  },
+  currentUser: {
+    type: Object,
+    default: null,
+  },
+  collectionOwnerEmail: {
+    type: String,
+    default: '',
+  },
 })
 
 const currentIndex = ref(0)
@@ -60,20 +68,16 @@ const setSliderPosition = () => {
 
 const touchStart = (event) => {
   isDragging.value = true
-  startPos.value = event.type.includes('mouse')
-    ? event.pageX
-    : event.touches[0].clientX
+  startPos.value = event.type.includes('mouse') ? event.pageX : event.touches[0].clientX
   prevTranslate.value = currentTranslate.value
 }
 
 const touchMove = (event) => {
   if (!isDragging.value) return
 
-  const currentPosition = event.type.includes('mouse')
-    ? event.pageX
-    : event.touches[0].clientX
+  const currentPosition = event.type.includes('mouse') ? event.pageX : event.touches[0].clientX
 
-  const diff = (currentPosition - startPos.value) * 100 / sliderRef.value.offsetWidth
+  const diff = ((currentPosition - startPos.value) * 100) / sliderRef.value.offsetWidth
   const newTranslate = prevTranslate.value + diff
 
   // Limit sliding beyond first and last slides
@@ -105,6 +109,10 @@ const touchEnd = () => {
   }
 }
 
+const isCollectionOwner = () => {
+  return props.currentUser?.email === props.collectionOwnerEmail
+}
+
 onMounted(() => {
   updateSlidePosition()
 })
@@ -115,36 +123,60 @@ onMounted(() => {
     <!-- Navigation Buttons -->
     <button v-if="currentIndex > 0" @click="prevSlide" class="nav-button left-6 group/btn">
       <div
-        class="bg-white/10 backdrop-blur-md p-4 rounded-full transition-all duration-300 group-hover/btn:bg-white/20">
+        class="bg-white/10 backdrop-blur-md p-4 rounded-full transition-all duration-300 group-hover/btn:bg-white/20"
+      >
         <v-icon name="bi-chevron-left" scale="1.5"></v-icon>
       </div>
     </button>
 
-    <button v-if="currentIndex < images.length - 1" @click="nextSlide" class="nav-button right-6 group/btn">
+    <button
+      v-if="currentIndex < images.length - 1"
+      @click="nextSlide"
+      class="nav-button right-6 group/btn"
+    >
       <div
-        class="bg-white/10 backdrop-blur-md p-4 rounded-full transition-all duration-300 group-hover/btn:bg-white/20">
+        class="bg-white/10 backdrop-blur-md p-4 rounded-full transition-all duration-300 group-hover/btn:bg-white/20"
+      >
         <v-icon name="bi-chevron-right" scale="1.5"></v-icon>
       </div>
     </button>
 
     <!-- Slider -->
-    <div ref="sliderRef" class="slider" @mousedown="touchStart" @mousemove="touchMove" @mouseup="touchEnd"
-      @mouseleave="touchEnd" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
-      <div v-for="(image, index) in images" :key="index" class="slide group/slide"
-        :class="{ 'active': currentIndex === index }">
+    <div
+      ref="sliderRef"
+      class="slider"
+      @mousedown="touchStart"
+      @mousemove="touchMove"
+      @mouseup="touchEnd"
+      @mouseleave="touchEnd"
+      @touchstart="touchStart"
+      @touchmove="touchMove"
+      @touchend="touchEnd"
+    >
+      <div
+        v-for="(image, index) in images"
+        :key="index"
+        class="slide group/slide"
+        :class="{ active: currentIndex === index }"
+      >
         <!-- Image Container -->
         <div class="relative w-full h-full overflow-hidden">
-          <img :src="image.url" :alt="`Slide ${index + 1}`"
-            class="slide-image transition-transform duration-500 group-hover/slide:scale-105" draggable="false" />
+          <img
+            :src="image.url"
+            :alt="`Slide ${index + 1}`"
+            class="slide-image transition-transform duration-500 group-hover/slide:scale-105"
+            draggable="false"
+          />
 
           <!-- Hover Overlay -->
           <div
-            class="absolute inset-0 bg-black/70 opacity-0 group-hover/slide:opacity-100 transition-opacity duration-300">
-          </div>
+            class="absolute inset-0 bg-black/70 opacity-0 group-hover/slide:opacity-100 transition-opacity duration-300"
+          ></div>
 
           <!-- Image Tag -->
           <div
-            class="absolute top-0 right-0 p-6 transform translate-y-4 opacity-0 group-hover/slide:translate-y-0 group-hover/slide:opacity-100 transition-all duration-300">
+            class="absolute top-0 right-0 p-6 transform translate-y-4 opacity-0 group-hover/slide:translate-y-0 group-hover/slide:opacity-100 transition-all duration-300"
+          >
             <div class="flex items-center gap-2">
               <!-- Tag Icon -->
               <div class="bg-white/10 backdrop-blur-md p-2 rounded-lg">
@@ -152,24 +184,36 @@ onMounted(() => {
               </div>
               <!-- Tag Text -->
               <div class="bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg">
-                <span class="text-sm font-medium">{{ props.imageTags[index].tag || `Image ${index + 1}` }}</span>
+                <span class="text-sm font-medium">{{
+                  props.imageTags[index].tag || `Image ${index + 1}`
+                }}</span>
               </div>
               <!-- Delete Button -->
-              <button @click="deleteImage(image.id)" class="bg-red-500 text-white p-2 rounded-lg relative z-20">
+              <button
+                v-if="isCollectionOwner()"
+                @click.stop="deleteImage(image.id)"
+                class="bg-red-500 text-white p-2 rounded-lg relative z-20"
+              >
                 <v-icon name="md-delete-round" scale="1.2"></v-icon>
               </button>
             </div>
           </div>
-
         </div>
       </div>
     </div>
 
     <!-- Pagination -->
     <div class="pagination">
-      <button v-for="(_, index) in images" :key="index" @click="goToSlide(index)" class="pagination-dot group/dot"
-        :class="{ 'active': currentIndex === index }">
-        <div class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300 group-hover/dot:bg-white/80"></div>
+      <button
+        v-for="(_, index) in images"
+        :key="index"
+        @click="goToSlide(index)"
+        class="pagination-dot group/dot"
+        :class="{ active: currentIndex === index }"
+      >
+        <div
+          class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300 group-hover/dot:bg-white/80"
+        ></div>
       </button>
     </div>
   </div>
