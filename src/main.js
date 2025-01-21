@@ -22,6 +22,7 @@ import {
   BiPencilFill,
   BiTrashFill,
   BiPlusCircle,
+  MdDeleteRound
 } from 'oh-vue-icons/icons'
 
 import App from './App.vue'
@@ -48,6 +49,7 @@ addIcons(
   BiPencilFill,
   BiTrashFill,
   BiPlusCircle,
+  MdDeleteRound
 )
 app.use(createPinia())
 app.use(router)
