@@ -2,12 +2,17 @@
 import { ref, onMounted, computed } from 'vue'
 import Slider from '@/components/Slider.vue'
 import useCollections from '@/composables/useCollections'
+import useAuth from '@/composables/useAuth'
 import CollectionsList from '@/components/CollectionsList.vue'
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 
+const { user } = useAuth()
 const showSlider = ref(false)
-const selectedUser = ref(null)
+const selectedCollection = ref(null)
+const showConfirmDeleteModal = ref(false)
+const collectionToDelete = ref(null)
 
-const { collections, fetchAllCollections, error, loading } = useCollections()
+const { collections, fetchAllCollections, deleteCollection, error, loading } = useCollections()
 
 onMounted(() => {
   fetchAllCollections()
@@ -15,19 +20,36 @@ onMounted(() => {
 
 const hasCollections = computed(() => collections.value.length > 0)
 
-const openUserCollections = (user) => {
-  selectedUser.value = user
+const openCollectionSlider = (collection) => {
+  selectedCollection.value = collection
   showSlider.value = true
 }
 
 const closeSlider = () => {
   showSlider.value = false
-  selectedUser.value = null
+  selectedCollection.value = null
 }
 
-// Add this for staggered animation
-const getAnimationDelay = (index) => {
-  return `${index * 0.1}s`
+const handleDeleteCollection = async (collectionId) => {
+  collectionToDelete.value = collectionId
+  showConfirmDeleteModal.value = true
+}
+
+const confirmDeleteCollection = async () => {
+  try {
+    await deleteCollection(user.value, collectionToDelete.value)
+    await fetchAllCollections()
+  } catch (err) {
+    console.error('Delete collection error:', err)
+  } finally {
+    showConfirmDeleteModal.value = false
+    collectionToDelete.value = null
+  }
+}
+
+const cancelDeleteCollection = () => {
+  showConfirmDeleteModal.value = false
+  collectionToDelete.value = null
 }
 </script>
 
@@ -39,20 +61,47 @@ const getAnimationDelay = (index) => {
     </div>
 
     <!-- Collections List -->
-    <CollectionsList :collections="collections" :hasCollections="hasCollections" />
+    <CollectionsList
+      :collections="collections"
+      :hasCollections="hasCollections"
+      :currentUser="user"
+      :isCollectionsRoute="true"
+      @openCollectionSlider="openCollectionSlider"
+      @deleteCollection="handleDeleteCollection"
+    />
+
+    <!-- Confirm Delete Modal -->
+    <ConfirmDeleteModal
+      :show="showConfirmDeleteModal"
+      :loading="loading"
+      message="Are you sure you want to delete this collection?"
+      @confirm="confirmDeleteCollection"
+      @cancel="cancelDeleteCollection"
+    />
 
     <!-- Slider Modal -->
-    <div v-if="showSlider" v-show="showSlider"
-      class="fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center" @click.self="closeSlider">
+    <div
+      v-if="showSlider"
+      class="fixed inset-0 bg-black/95 z-40 flex flex-col items-center justify-center"
+      @click.self="closeSlider"
+    >
       <div class="w-full max-w-6xl p-4">
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
           <div class="flex items-center space-x-3">
-            <img :src="selectedUser?.avatar" :alt="selectedUser?.name" class="w-12 h-12 rounded-full " />
+            <img
+              :src="selectedCollection?.userProfileImage"
+              :alt="selectedCollection?.name"
+              class="w-12 h-12 rounded-full object-cover"
+            />
             <div>
-              <h3 class="font-semibold text-xl">{{ selectedUser?.name }}</h3>
-              <p class="text-sm text-gray-400">{{ selectedUser?.username }}</p>
+              <h3 class="font-semibold text-xl">{{ selectedCollection?.userFullName }}</h3>
+              <p class="text-sm text-gray-400">{{ selectedCollection?.userName }}</p>
             </div>
+          </div>
+          <div>
+            <h3 class="font-semibold text-xl">{{ selectedCollection?.name }}</h3>
+            <p class="text-sm text-gray-400">{{ selectedCollection?.description }}</p>
           </div>
           <button @click="closeSlider" class="p-2 hover:bg-white/10 rounded-full transition-colors">
             <v-icon name="bi-x-lg" scale="1.5"></v-icon>
@@ -61,7 +110,13 @@ const getAnimationDelay = (index) => {
 
         <!-- Slider -->
         <div class="h-[70vh]">
-          <Slider v-if="selectedUser" :images="selectedUser.collections" :image-tags="selectedUser.imageTags" />
+          <Slider
+            v-if="selectedCollection"
+            :images="selectedCollection.images"
+            :imageTags="selectedCollection.tags"
+            :currentUser="user"
+            :collectionOwnerEmail="selectedCollection.userEmail"
+          />
         </div>
       </div>
     </div>
@@ -83,9 +138,7 @@ const getAnimationDelay = (index) => {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(45deg,
-      rgba(59, 130, 246, 0.1),
-      rgba(147, 51, 234, 0.1));
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
   z-index: -1;
   border-radius: inherit;
 }

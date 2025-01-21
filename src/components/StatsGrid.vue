@@ -1,19 +1,19 @@
 <script setup>
-import { defineProps } from 'vue'
-
 const props = defineProps({
   stats: {
     type: Array,
-    required: true
-  }
+    required: true,
+  },
 })
-
 </script>
 
 <template>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div v-for="(stat, index) in stats" :key="index"
-      class="bg-blue-900/30 backdrop-blur-[10px] rounded-lg p-6 transition-all duration-300 hover:transform hover:scale-105">
+    <div
+      v-for="(stat, index) in stats"
+      :key="index"
+      class="bg-blue-900/30 backdrop-blur-[10px] rounded-lg p-6 transition-all duration-300 hover:transform hover:scale-105"
+    >
       <div class="flex items-center justify-between">
         <div>
           <p class="text-gray-400 text-sm">{{ stat.title }}</p>
