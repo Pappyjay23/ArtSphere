@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 
 // Upload image to ImgBB - https://imgbb.com/
+// Upload image to Cloudinary(Console) - https://console.cloudinary.com/
 const useImageUpload = () => {
   const error = ref(null)
   const loading = ref(false)
