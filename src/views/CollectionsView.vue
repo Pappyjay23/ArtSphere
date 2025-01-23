@@ -11,8 +11,10 @@ const showSlider = ref(false)
 const selectedCollection = ref(null)
 const showConfirmDeleteModal = ref(false)
 const collectionToDelete = ref(null)
+const imageToDelete = ref(null)
 
-const { collections, fetchAllCollections, deleteCollection, error, loading } = useCollections()
+const { collections, fetchAllCollections, deleteCollection, updateCollection, error, loading } =
+  useCollections()
 
 onMounted(() => {
   fetchAllCollections()
@@ -50,6 +52,48 @@ const confirmDeleteCollection = async () => {
 const cancelDeleteCollection = () => {
   showConfirmDeleteModal.value = false
   collectionToDelete.value = null
+  imageToDelete.value = null
+}
+
+const deleteImage = (imageId) => {
+  imageToDelete.value = imageId
+  showConfirmDeleteModal.value = true
+}
+
+const confirmDeleteImage = async () => {
+  if (!selectedCollection.value || !imageToDelete.value) return
+
+  const updatedImages = selectedCollection.value.images.filter(
+    (image) => image.id !== imageToDelete.value,
+  )
+  const updatedTags = selectedCollection.value.tags.filter((tag) => tag.id !== imageToDelete.value)
+
+  const updatedCollection = {
+    ...selectedCollection.value,
+    images: updatedImages,
+    tags: updatedTags,
+  }
+
+  try {
+    await updateCollection(user.value, updatedCollection)
+    selectedCollection.value = updatedCollection
+    showSlider.value = false
+    selectedCollection.value = null
+    await fetchAllCollections()
+  } catch (err) {
+    console.error('Delete image error:', err)
+  } finally {
+    showConfirmDeleteModal.value = false
+    imageToDelete.value = null
+  }
+}
+
+const confirmDelete = async () => {
+  if (collectionToDelete.value) {
+    await confirmDeleteCollection()
+  } else if (imageToDelete.value) {
+    await confirmDeleteImage()
+  }
 }
 </script>
 
@@ -74,8 +118,12 @@ const cancelDeleteCollection = () => {
     <ConfirmDeleteModal
       :show="showConfirmDeleteModal"
       :loading="loading"
-      message="Are you sure you want to delete this collection?"
-      @confirm="confirmDeleteCollection"
+      :message="
+        collectionToDelete
+          ? 'Are you sure you want to delete this collection?'
+          : 'Are you sure you want to delete this image?'
+      "
+      @confirm="confirmDelete"
       @cancel="cancelDeleteCollection"
     />
 
@@ -116,6 +164,7 @@ const cancelDeleteCollection = () => {
             :imageTags="selectedCollection.tags"
             :currentUser="user"
             :collectionOwnerEmail="selectedCollection.userEmail"
+            @deleteImage="deleteImage"
           />
         </div>
       </div>

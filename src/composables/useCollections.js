@@ -132,8 +132,8 @@ const useCollections = () => {
       await setDoc(doc(db, 'collections', collectionData.id), updatedCollection)
 
       // Update user's collections array and stats
-      const updatedCollectionsArray = userData.collectionsArray.map(collection =>
-        collection.id === collectionData.id ? updatedCollection : collection
+      const updatedCollectionsArray = userData.collectionsArray.map((collection) =>
+        collection.id === collectionData.id ? updatedCollection : collection,
       )
 
       await updateDoc(userRef, {
@@ -168,11 +168,16 @@ const useCollections = () => {
       await deleteDoc(doc(db, 'collections', collectionId))
 
       // Update user's collections array and stats
-      const updatedCollectionsArray = userData.collectionsArray.filter(collection => collection.id !== collectionId)
+      const updatedCollectionsArray = userData.collectionsArray.filter(
+        (collection) => collection.id !== collectionId,
+      )
       await updateDoc(userRef, {
         collectionsArray: updatedCollectionsArray,
         'stats.totalCollections': increment(-1),
-        'stats.totalImages': increment(-userData.collectionsArray.find(collection => collection.id === collectionId).images.length),
+        'stats.totalImages': increment(
+          -userData.collectionsArray.find((collection) => collection.id === collectionId).images
+            .length,
+        ),
       })
 
       // Update total collections document if it exists
