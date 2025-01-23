@@ -1,4 +1,9 @@
 <script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const MAX_COLLECTION_IMAGES = 4
+
 const props = defineProps({
   collections: {
     type: Array,
@@ -47,6 +52,26 @@ const handleDeleteCollection = (collectionId) => {
 const isCollectionOwner = (collection) => {
   return props.currentUser?.email === collection.userEmail
 }
+
+const canAddImages = (collection) => {
+  return collection.images.length < MAX_COLLECTION_IMAGES
+}
+
+// Add a computed property for the button tooltip
+const addImagesButtonTooltip = (collection) => {
+  if (!canAddImages(collection)) {
+    return 'Collection is full'
+  }
+  return 'Add Images'
+}
+
+const handleAddCollection = () => {
+  if (props.isCollectionsRoute) {
+    router.push('/dashboard')
+  } else {
+    emit('toggleAddCollectionForm', true)
+  }
+}
 </script>
 
 <template>
@@ -79,13 +104,22 @@ const isCollectionOwner = (collection) => {
           </div>
 
           <div class="flex gap-2 items-center max-w-fit">
-            <!-- Add Images Button - Only show in dashboard for collection owner -->
+            <!-- Add Images Button - Show for collection owner but disable if full -->
             <div
               v-if="!isCollectionsRoute && isCollectionOwner(collection)"
               class="relative z-20 flex flex-wrap items-center space-x-2 bg-white/10 py-2 px-3 rounded-lg border border-white/20 action-button"
-              @click="showAddImageModal(collection)"
+              :class="{
+                'opacity-50 cursor-not-allowed': !canAddImages(collection),
+                'cursor-pointer': canAddImages(collection),
+              }"
+              @click="canAddImages(collection) && showAddImageModal(collection)"
+              :data-tooltip="addImagesButtonTooltip(collection)"
             >
-              <v-icon name="bi-plus-circle" scale="1" class="text-blue-400"></v-icon>
+              <v-icon
+                name="bi-plus-circle"
+                scale="1"
+                :class="canAddImages(collection) ? 'text-blue-400' : 'text-gray-400'"
+              ></v-icon>
               <span class="text-[80%] font-medium hidden">Add Images</span>
             </div>
 
@@ -144,7 +178,7 @@ const isCollectionOwner = (collection) => {
   <div v-else class="text-center">
     <p class="text-gray-400 text-lg mb-4">No collections found.</p>
     <button
-      @click="$emit('toggleAddCollectionForm', true)"
+      @click="handleAddCollection"
       class="bg-blue-500/20 bg-blur-lg text-white text-lg px-6 py-4 rounded-[5rem] shadow-[inset_3px_3px_10px_rgba(255,255,255,0.5)] scale-[0.9] hover:scale-[1] transition-all duration-500 ease-in-out"
     >
       <div class="bg-white bg-blur-lg px-6 py-4 rounded-[2rem] text-black flex gap-2 items-center">
@@ -153,3 +187,26 @@ const isCollectionOwner = (collection) => {
     </button>
   </div>
 </template>
+
+<style scoped>
+/* Update tooltip styles to use data-tooltip instead of title */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  z-index: 30;
+}
+</style>

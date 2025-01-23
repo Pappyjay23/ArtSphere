@@ -43,17 +43,44 @@ const imageError = ref('')
 
 const newCollectionName = ref('')
 
+const MAX_COLLECTION_IMAGES = 4
+const MAX_NEW_IMAGES = 2
+
 const handleImageUpload = (e) => {
   const files = Array.from(e.target.files)
-  if (newImages.value.length + files.length > 5) {
-    imageError.value = 'You can only add up to 5 images'
-    return
-  }
-  files.forEach((file) => {
-    if (file.size > 5 * 1024 * 1024) {
-      imageError.value = 'Image size should be less than 5MB'
+
+  // Check if adding these files would exceed collection limit
+  if (selectedCollection.value) {
+    const remainingSlots = MAX_COLLECTION_IMAGES - selectedCollection.value.images.length
+    const maxAllowed = Math.min(remainingSlots, MAX_NEW_IMAGES)
+
+    if (files.length > maxAllowed) {
+      imageError.value =
+        remainingSlots === 1
+          ? 'You can only add 1 more image'
+          : `You can only add up to ${maxAllowed} more images`
+      e.target.value = ''
       return
     }
+  } else {
+    // For new collection
+    if (newImages.value.length + files.length > MAX_COLLECTION_IMAGES) {
+      imageError.value = `You can only add up to ${MAX_COLLECTION_IMAGES} images in a collection`
+      e.target.value = ''
+      return
+    }
+  }
+
+  // Check file sizes
+  for (const file of files) {
+    if (file.size > 1 * 1024 * 1024) {
+      imageError.value = 'Each image must be less than 1MB'
+      e.target.value = ''
+      return
+    }
+  }
+
+  files.forEach((file) => {
     const imageId = uuidv4()
     newImages.value.push({ id: imageId, file })
     imagePreviews.value.push({ id: imageId, url: URL.createObjectURL(file) })
@@ -71,9 +98,16 @@ const removeImage = (index) => {
 const updateTag = ({ imageId, tag }) => {
   const tagIndex = newTags.value.findIndex((t) => t.id === imageId)
   if (tagIndex !== -1) {
-    newTags.value[tagIndex].tag = tag
+    newTags.value[tagIndex] = {
+      id: imageId,
+      tag: tag,
+    }
   } else {
-    console.error('Tag index out of bounds')
+    // If tag doesn't exist, add it
+    newTags.value.push({
+      id: imageId,
+      tag: tag,
+    })
   }
 }
 
@@ -115,6 +149,16 @@ const closeSlider = () => {
 const handleShowAddImageModal = (collection) => {
   selectedCollection.value = collection
   showAddImageModal.value = true
+}
+
+const closeAddImageModal = () => {
+  showAddImageModal.value = false
+  selectedCollection.value = null
+  // Clear the form state
+  newImages.value = []
+  newTags.value = []
+  imagePreviews.value = []
+  imageError.value = ''
 }
 
 const handleDeleteCollection = async (collectionId) => {
@@ -186,36 +230,40 @@ onMounted(() => {
   }
 })
 
-const submitNewImage = async () => {
-  if (newImages.value.length === 0) {
-    imageError.value = 'At least one image is required'
-    return
-  }
-
-  const newImagesData = newImages.value.map((image, index) => ({
-    id: image.id,
-    file: image.file,
-    tag: newTags.value[index].tag,
-  }))
+const submitNewImage = async ({ images, tags }) => {
+  if (!selectedCollection.value) return
 
   try {
+    // Create updated collection with new images and tags
     const updatedCollection = {
       ...selectedCollection.value,
-      images: [...selectedCollection.value.images, ...newImagesData],
+      images: [
+        ...selectedCollection.value.images,
+        ...images.map((image) => ({
+          id: image.id,
+          file: image.file,
+          url: image.url, // Make sure to include the URL if it exists
+        })),
+      ],
       tags: [
         ...selectedCollection.value.tags,
-        ...newTags.value.map((tag) => ({ id: tag.id, tag: tag.tag })),
+        ...tags.map((tag) => ({
+          id: tag.id,
+          tag: tag.tag || '', // Ensure empty tags are handled
+        })),
       ],
     }
 
     await updateCollection(user.value, updatedCollection)
+    await fetchUserCollections(user.value.email)
+    showAddImageModal.value = false
+    selectedCollection.value = null
+    // Clear form state
     newImages.value = []
     newTags.value = []
     imagePreviews.value = []
-    showAddImageModal.value = false
-    await fetchUserCollections(user.value.email)
   } catch (err) {
-    console.error('Add image error:', err)
+    console.error('Add images error:', err)
   }
 }
 
@@ -278,7 +326,8 @@ const stats = computed(() => [
     />
 
     <AddImageModal
-      v-if="showAddImageModal"
+      v-if="showAddImageModal && selectedCollection"
+      :selectedCollection="selectedCollection"
       :newImages="newImages"
       :newTags="newTags"
       :imagePreviews="imagePreviews"
@@ -288,7 +337,7 @@ const stats = computed(() => [
       @removeImage="removeImage"
       @updateTag="updateTag"
       @submitNewImage="submitNewImage"
-      @close="showAddImageModal = false"
+      @close="closeAddImageModal"
     />
 
     <ConfirmDeleteModal

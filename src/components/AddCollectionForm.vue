@@ -62,7 +62,7 @@ const collectionName = computed({
                 <label for="image-upload" class="block text-sm font-medium text-gray-300 w-fit">
                     <div class="flex gap-2 mb-4 text-[80%] md:text-[95%]">
                         <span>Upload Images</span>
-                        <span class="text-gray-400">(Max 5 images)</span>
+                        <span class="text-gray-400">(Max 4 images)</span>
                     </div>
                     <div
                         class="bg-blue-500/20 bg-blur-lg text-white text-lg py-3 px-5 rounded-[2rem] shadow-[inset_3px_3px_10px_rgba(255,255,255,0.5)] scale-[0.9] hover:scale-[1] transition-all duration-500 ease-in-out w-fit cursor-pointer">

@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { Timestamp } from 'firebase/firestore'
 import Slider from '@/components/Slider.vue'
 import useCollections from '@/composables/useCollections'
 import useAuth from '@/composables/useAuth'
@@ -13,14 +14,95 @@ const showConfirmDeleteModal = ref(false)
 const collectionToDelete = ref(null)
 const imageToDelete = ref(null)
 
-const { collections, fetchAllCollections, deleteCollection, updateCollection, error, loading } =
-  useCollections()
+const {
+  collections: firebaseCollections,
+  fetchAllCollections,
+  deleteCollection,
+  updateCollection,
+  error,
+  loading,
+} = useCollections()
+
+// Featured collections data formatted to match Firebase schema
+const featuredCollections = [
+  {
+    id: '1',
+    name: 'Urban Landscapes',
+    userEmail: 'sarah@example.com',
+    userName: '@sarahj',
+    userFullName: 'Sarah Johnson',
+    userProfileImage: 'https://i.pravatar.cc/150?img=5',
+    createdAt: Timestamp.fromDate(new Date('2025-01-22')),
+    images: [
+      {
+        id: '1-1',
+        url: 'https://images.unsplash.com/photo-1449034446853-66c86144b0ad?w=800&auto=format',
+      },
+      {
+        id: '1-2',
+        url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&auto=format',
+      },
+      {
+        id: '1-3',
+        url: 'https://images.unsplash.com/photo-1470723710355-95304d8aece4?w=800&auto=format',
+      },
+      {
+        id: '1-4',
+        url: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&auto=format',
+      },
+    ],
+    tags: [
+      { id: '1-1', tag: 'Urban Photography' },
+      { id: '1-2', tag: 'City Architecture' },
+      { id: '1-3', tag: 'Night Scenes' },
+      { id: '1-4', tag: 'Modern Buildings' },
+    ],
+  },
+  {
+    id: '2',
+    name: 'Nature Escapes',
+    userEmail: 'john@example.com',
+    userName: '@johnd',
+    userFullName: 'John Doe',
+    userProfileImage: 'https://i.pravatar.cc/150?img=12',
+    createdAt: Timestamp.fromDate(new Date('2025-01-23')),
+    images: [
+      {
+        id: '2-1',
+        url: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&auto=format',
+      },
+      {
+        id: '2-2',
+        url: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800&auto=format',
+      },
+      {
+        id: '2-3',
+        url: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&auto=format',
+      },
+      {
+        id: '2-4',
+        url: 'https://images.unsplash.com/photo-1542224566-6e85f2e6772f?w=800&auto=format',
+      },
+    ],
+    tags: [
+      { id: '2-1', tag: 'Nature Vibes' },
+      { id: '2-2', tag: 'Mountain Views' },
+      { id: '2-3', tag: 'Landscapes' },
+      { id: '2-4', tag: 'Forest Life' },
+    ],
+  },
+]
+
+// Combine featured and Firebase collections
+const allCollections = computed(() => {
+  return [...featuredCollections, ...firebaseCollections.value]
+})
+
+const hasCollections = computed(() => allCollections.value.length > 0)
 
 onMounted(() => {
   fetchAllCollections()
 })
-
-const hasCollections = computed(() => collections.value.length > 0)
 
 const openCollectionSlider = (collection) => {
   selectedCollection.value = collection
@@ -106,7 +188,7 @@ const confirmDelete = async () => {
 
     <!-- Collections List -->
     <CollectionsList
-      :collections="collections"
+      :collections="allCollections"
       :hasCollections="hasCollections"
       :currentUser="user"
       :isCollectionsRoute="true"
