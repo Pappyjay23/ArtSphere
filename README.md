@@ -1,18 +1,36 @@
-# art-sphere
+<div align="center">
+	<h1> ArtSphere</h1>
+</div>
 
-This template should help get you started developing with Vue 3 in Vite.
+## Snapshots 📸
 
-## Recommended IDE Setup
+![ArtSphere](https://github.com/user-attachments/assets/9603565b-4d02-4555-a49d-e76545b2564f)
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-## Type Support for `.vue` Imports in TS
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
 
-## Customize configuration
+## Tech Stack ✨
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- [Vue.js](https://vuejs.org/) - Javascript Framework
+- [Tailwind CSS](https://tailwindcss.com/) - Styling and UI
+- [Vite](https://vitejs.dev/) - Build tool
+- [Vercel](https://vercel.com/) - Hosting and Deployment
+
+## How to run locally 💻
+
+Follow these steps to run DevHire on your local machine.
+
+### Clone this repository
+
+```bash
+git clone https://github.com/Pappyjay23/ArtSphere.git
+```
+
+### Navigate to the directory
+
+```bash
+cd ArtSphere
+```
 
 ## Project Setup
 
@@ -26,14 +44,14 @@ npm install
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+Now, you can navigate to http://localhost:5173 to view the app.
+
+### Compile and Minify for Production
 
 ```sh
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## Credits ✍
 
-```sh
-npm run lint
-```
+Implementation by [@Pappyjay23](https://github.com/Pappyjay23)
