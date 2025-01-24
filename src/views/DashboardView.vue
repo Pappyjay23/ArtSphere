@@ -367,7 +367,7 @@ const stats = computed(() => [
             />
             <div>
               <h3 class="font-semibold text-xl">{{ selectedCollection?.userFullName }}</h3>
-              <p class="text-sm text-gray-400">{{ selectedCollection?.userName }}</p>
+              <p class="text-sm text-gray-400">@{{ selectedCollection?.userName }}</p>
             </div>
           </div>
           <div>

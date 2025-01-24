@@ -29,7 +29,7 @@ const featuredCollections = [
     id: '1',
     name: 'Urban Landscapes',
     userEmail: 'sarah@example.com',
-    userName: '@sarahj',
+    userName: 'sarahj',
     userFullName: 'Sarah Johnson',
     userProfileImage: 'https://i.pravatar.cc/150?img=5',
     createdAt: Timestamp.fromDate(new Date('2025-01-22')),
@@ -62,7 +62,7 @@ const featuredCollections = [
     id: '2',
     name: 'Nature Escapes',
     userEmail: 'john@example.com',
-    userName: '@johnd',
+    userName: 'johnd',
     userFullName: 'John Doe',
     userProfileImage: 'https://i.pravatar.cc/150?img=12',
     createdAt: Timestamp.fromDate(new Date('2025-01-23')),
@@ -226,7 +226,7 @@ const confirmDelete = async () => {
             />
             <div>
               <h3 class="font-semibold text-xl">{{ selectedCollection?.userFullName }}</h3>
-              <p class="text-sm text-gray-400">{{ selectedCollection?.userName }}</p>
+              <p class="text-sm text-gray-400">@{{ selectedCollection?.userName }}</p>
             </div>
           </div>
           <div>

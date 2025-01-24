@@ -99,7 +99,7 @@ const handleAddCollection = () => {
             </div>
             <div class="flex flex-col gap-1">
               <span class="text-[90%] font-medium">{{ collection.userFullName }}</span>
-              <span class="text-[80%]">{{ collection.userName }}</span>
+              <span class="text-[80%]">@{{ collection.userName }}</span>
             </div>
           </div>
 
