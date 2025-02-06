@@ -1,27 +1,27 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import useCollections from '@/composables/useCollections'
 
 const router = useRouter()
-const MAX_COLLECTION_IMAGES = 4
+const { toggleLike } = useCollections()
 
 const props = defineProps({
-  collections: {
-    type: Array,
-    required: true,
-  },
-  hasCollections: {
-    type: Boolean,
-    required: true,
-  },
-  currentUser: {
-    type: Object,
-    default: null,
-  },
-  isCollectionsRoute: {
-    type: Boolean,
-    default: false,
-  },
+  collections: Array,
+  hasCollections: Boolean,
+  currentUser: Object,
+  isCollectionsRoute: Boolean,
 })
+
+const handleLikeCollection = async (collection) => {
+  if (!props.currentUser) return
+  await toggleLike(props.currentUser, collection.id)
+}
+
+const hasUserLiked = (collection) => {
+  return collection.likedBy?.includes(props.currentUser?.email)
+}
+
+const MAX_COLLECTION_IMAGES = 4
 
 const emit = defineEmits([
   'openCollectionSlider',
@@ -71,6 +71,11 @@ const handleAddCollection = () => {
   } else {
     emit('toggleAddCollectionForm', true)
   }
+}
+
+const isFirebaseCollection = (collection) => {
+  // Featured collections have IDs '1' and '2'
+  return !['1', '2'].includes(collection.id)
 }
 </script>
 
@@ -144,11 +149,40 @@ const handleAddCollection = () => {
               {{ collection.images.length < 2 ? 'image' : 'images' }}</span
             >
           </div>
-          <div class="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-lg">
-            <v-icon name="bi-clock-history" scale="1" class="text-purple-400"></v-icon>
-            <span class="text-xs text-white/80">{{
-              collection.createdAt.toDate().toLocaleDateString()
-            }}</span>
+          <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-lg">
+              <v-icon name="bi-clock-history" scale="1" class="text-purple-400"></v-icon>
+              <span class="text-xs text-white/80">{{
+                collection.createdAt.toDate().toLocaleDateString()
+              }}</span>
+            </div>
+
+            <!-- Like collection - Only show for Firebase collections -->
+            <div
+              v-if="isFirebaseCollection(collection)"
+              class="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-lg relative z-40 action-button"
+              @click="handleLikeCollection(collection)"
+              :class="{ 'bg-pink-500/20': hasUserLiked(collection) }"
+            >
+              <span
+                class="text-xs"
+                :class="{
+                  'text-pink-500': hasUserLiked(collection),
+                  'text-white/80': !hasUserLiked(collection),
+                }"
+              >
+                {{ hasUserLiked(collection) ? '❤️' : '🤍' }}
+              </span>
+              <span
+                class="text-xs"
+                :class="{
+                  'text-pink-500': hasUserLiked(collection),
+                  'text-white/80': !hasUserLiked(collection),
+                }"
+              >
+                {{ collection.likes || 0 }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -208,5 +242,13 @@ const handleAddCollection = () => {
   border-radius: 4px;
   margin-bottom: 4px;
   z-index: 30;
+}
+
+.action-button {
+  transition: all 0.3s ease;
+}
+
+.action-button:hover {
+  transform: scale(1.05);
 }
 </style>

@@ -19,7 +19,6 @@ const {
   fetchAllCollections,
   deleteCollection,
   updateCollection,
-  error,
   loading,
 } = useCollections()
 
@@ -230,8 +229,7 @@ const confirmDelete = async () => {
             </div>
           </div>
           <div>
-            <h3 class="font-semibold text-xl">{{ selectedCollection?.name }}</h3>
-            <p class="text-sm text-gray-400">{{ selectedCollection?.description }}</p>
+            <h3 class="font-semibold text-xl hidden md:block">{{ selectedCollection?.name }}</h3>
           </div>
           <button @click="closeSlider" class="p-2 hover:bg-white/10 rounded-full transition-colors">
             <v-icon name="bi-x-lg" scale="1.5"></v-icon>

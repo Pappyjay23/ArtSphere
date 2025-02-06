@@ -1,6 +1,7 @@
 import { db } from '@/firebase/config'
 import {
   arrayUnion,
+  arrayRemove,
   collection,
   deleteDoc,
   doc,
@@ -8,14 +9,16 @@ import {
   getDocs,
   increment,
   setDoc,
-  updateDoc
+  updateDoc,
 } from 'firebase/firestore'
 import { v4 as uuidv4 } from 'uuid'
 import { ref } from 'vue'
 import useImageUpload from './useImageUpload'
 
+// Move collections ref outside the composable to make it shared state
+const collections = ref([])
+
 const useCollections = () => {
-  const collections = ref([])
   const error = ref(null)
   const loading = ref(false)
   const { uploadImage } = useImageUpload()
@@ -61,6 +64,7 @@ const useCollections = () => {
         createdAt: new Date(),
         views: 0,
         likes: 0,
+        likedBy: [],
       }
 
       await setDoc(doc(db, 'collections', collectionId), newCollection)
@@ -227,6 +231,47 @@ const useCollections = () => {
     }
   }
 
+  const toggleLike = async (user, collectionId) => {
+    try {
+      if (!user) throw new Error('Must be logged in to like collections')
+
+      const collectionRef = doc(db, 'collections', collectionId)
+      const collectionDoc = await getDoc(collectionRef)
+
+      if (!collectionDoc.exists()) return
+
+      const collectionData = collectionDoc.data()
+      const hasLiked = collectionData.likedBy?.includes(user.email)
+      const newLikes = hasLiked
+        ? Math.max(0, (collectionData.likes || 0) - 1)
+        : (collectionData.likes || 0) + 1
+
+      // Update Firestore
+      await updateDoc(collectionRef, {
+        likes: newLikes,
+        likedBy: hasLiked ? arrayRemove(user.email) : arrayUnion(user.email),
+      })
+
+      // Update local state with new collection data
+      const updatedCollection = {
+        ...collectionData,
+        id: collectionId,
+        likes: newLikes,
+        likedBy: hasLiked
+          ? (collectionData.likedBy || []).filter((email) => email !== user.email)
+          : [...(collectionData.likedBy || []), user.email],
+      }
+
+      // Find and update the collection in our shared reactive collections array
+      const index = collections.value.findIndex((c) => c.id === collectionId)
+      if (index !== -1) {
+        collections.value[index] = updatedCollection
+      }
+    } catch (err) {
+      console.error('Toggle like error:', err)
+    }
+  }
+
   return {
     collections,
     error,
@@ -236,6 +281,7 @@ const useCollections = () => {
     deleteCollection,
     fetchUserCollections,
     fetchAllCollections,
+    toggleLike,
   }
 }
 

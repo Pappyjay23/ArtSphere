@@ -394,4 +394,6 @@ const stats = computed(() => [
   </div>
 </template>
 
-
+<style>
+/* Add any additional styles if needed */
+</style>
