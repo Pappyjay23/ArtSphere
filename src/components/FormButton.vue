@@ -14,6 +14,3 @@ defineProps({
     {{ text }}<slot></slot>
   </button>
 </template>
-
-<style>
-</style>

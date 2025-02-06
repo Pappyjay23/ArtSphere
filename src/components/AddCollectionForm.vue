@@ -93,6 +93,4 @@ const collectionName = computed({
     </div>
 </template>
 
-<style scoped>
-/* Add any additional styles if needed */
-</style>
+

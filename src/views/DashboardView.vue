@@ -1,16 +1,15 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import useAuth from '@/composables/useAuth'
-import useCollections from '@/composables/useCollections'
-import Slider from '@/components/Slider.vue'
-import StatsGrid from '@/components/StatsGrid.vue'
-import MiniMenu from '@/components/MiniMenu.vue'
-import CollectionsList from '@/components/CollectionsList.vue'
 import AddCollectionForm from '@/components/AddCollectionForm.vue'
 import AddImageModal from '@/components/AddImageModal.vue'
+import CollectionsList from '@/components/CollectionsList.vue'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
-import Loader from '@/components/Loader.vue'
+import MiniMenu from '@/components/MiniMenu.vue'
+import Slider from '@/components/Slider.vue'
+import StatsGrid from '@/components/StatsGrid.vue'
+import useAuth from '@/composables/useAuth'
+import useCollections from '@/composables/useCollections'
 import { v4 as uuidv4 } from 'uuid'
+import { computed, onMounted, ref } from 'vue'
 
 const { user } = useAuth()
 const {
@@ -395,6 +394,4 @@ const stats = computed(() => [
   </div>
 </template>
 
-<style>
-/* Add any additional styles if needed */
-</style>
+

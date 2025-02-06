@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { auth, db } from '@/firebase/config'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -6,7 +6,7 @@ import {
   updateProfile,
 } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
-import { auth, db } from '@/firebase/config'
+import { ref } from 'vue'
 import useImageUpload from './useImageUpload'
 
 const user = ref(auth.currentUser)
@@ -71,7 +71,6 @@ const useAuth = () => {
         email,
         profileImage: imageUrl,
         createdAt: new Date().toISOString(),
-        collections: [],
         followers: 0,
         stats: {
           totalCollections: 0,

@@ -1,13 +1,13 @@
 <script setup>
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import LoginImg from '@/assets/images/sign-up-bg.webp'
 import SignUpImg from '@/assets/images/login-bg.webp'
+import LoginImg from '@/assets/images/sign-up-bg.webp'
 import Button from '@/components/FormButton.vue'
 import FormInput from '@/components/FormInput.vue'
-import { computed } from 'vue'
-import useAuth from '@/composables/useAuth'
 import Loader from '@/components/Loader.vue'
+import useAuth from '@/composables/useAuth'
+import { watch } from 'vue'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const { signup, login, error, loading } = useAuth()
 const router = useRouter()
@@ -65,6 +65,8 @@ const formatErrorMessage = (error) => {
       return 'No user found with this email.'
     case 'auth/wrong-password':
       return 'Incorrect password. Please try again.'
+    case 'auth/weak-password':
+      return 'Password should be at least 6 characters.'
     // Add more cases as needed
     default:
       return 'An error occurred. Please try again.'
@@ -106,6 +108,21 @@ const submitForm = async (e) => {
     }, 2000)
   }
 }
+
+watch(
+  () => route.path,
+  () => {
+    formValues.value = {
+      fullname: '',
+      username: '',
+      email: '',
+      password: '',
+      profileImage: null,
+    }
+    imagePreview.value = null
+    imageError.value = ''
+  },
+)
 </script>
 
 <template>
