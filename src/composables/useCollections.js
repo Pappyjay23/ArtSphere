@@ -231,7 +231,7 @@ const useCollections = () => {
     }
   }
 
-  const toggleLike = async (user, collectionId) => {
+  const toggleLike = async (user, collectionId, userEmail) => {
     try {
       if (!user) throw new Error('Must be logged in to like collections')
 
@@ -241,15 +241,46 @@ const useCollections = () => {
       if (!collectionDoc.exists()) return
 
       const collectionData = collectionDoc.data()
-      const hasLiked = collectionData.likedBy?.includes(user.email)
+
+      const userDocId = userEmail.replace(/\./g, ',')
+      const userRef = doc(db, 'users', userDocId)
+      const userDoc = await getDoc(userRef)
+      if (!userDoc.exists()) {
+        throw new Error('User not found')
+      }
+      const userData = userDoc.data()
+
+      const userCollectionsArray = userData.collectionsArray.filter(
+        (collection) => collection.id !== collectionId,
+      )
+
+      const hasLiked =
+        collectionData.likedBy?.includes(user.email) ||
+        userCollectionsArray.likedBy?.includes(user.email)
       const newLikes = hasLiked
-        ? Math.max(0, (collectionData.likes || 0) - 1)
-        : (collectionData.likes || 0) + 1
+        ? Math.max(0, (collectionData.likes || userCollectionsArray.likes || 0) - 1)
+        : (collectionData.likes || userCollectionsArray.likes || 0) + 1
 
       // Update Firestore
       await updateDoc(collectionRef, {
         likes: newLikes,
         likedBy: hasLiked ? arrayRemove(user.email) : arrayUnion(user.email),
+      })
+
+      const updatedCollectionsArray = userData.collectionsArray.map((collection) =>
+        collection.id === collectionId
+          ? {
+              ...collection,
+              likes: newLikes,
+              likedBy: hasLiked
+                ? (collection.likedBy || []).filter((email) => email !== user.email)
+                : [...(collection.likedBy || []), user.email],
+            }
+          : collection,
+      )
+
+      await updateDoc(userRef, {
+        collectionsArray: updatedCollectionsArray,
       })
 
       // Update local state with new collection data

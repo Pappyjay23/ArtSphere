@@ -14,7 +14,7 @@ const props = defineProps({
 
 const handleLikeCollection = async (collection) => {
   if (!props.currentUser) return
-  await toggleLike(props.currentUser, collection.id)
+  await toggleLike(props.currentUser, collection.id, collection.userEmail)
 }
 
 const hasUserLiked = (collection) => {
@@ -159,7 +159,7 @@ const isFirebaseCollection = (collection) => {
 
             <!-- Like collection - Only show for Firebase collections -->
             <div
-              v-if="isFirebaseCollection(collection) && isCollectionsRoute"
+              v-if="isFirebaseCollection(collection)"
               class="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-lg relative z-40 action-button"
               @click="handleLikeCollection(collection)"
               :class="{ 'bg-pink-500/20': hasUserLiked(collection) }"
@@ -180,7 +180,7 @@ const isFirebaseCollection = (collection) => {
                   'text-white/80': !hasUserLiked(collection),
                 }"
               >
-                {{ collection.likes || 0 }}
+                {{ collection.likes ||  0 }}
               </span>
             </div>
           </div>
