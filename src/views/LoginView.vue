@@ -125,7 +125,7 @@ watch(() => route.path, () => {
 <template>
   <div class="flex justify-center items-center h-screen">
     <div
-      class="login-container h-fit lg:h-[90%] w-[90%] md:w-[70%] lg:w-[90%] bg-blue-900/30 shadow-[inset_2px_2px_8px_4px_rgba(255,255,255,0.3)] lg:shadow-none backdrop-blur-[10px] rounded-lg flex justify-center gap-5 p-2 lg:p-4">
+      class="login-container h-fit lg:h-[90%] w-full md:w-[70%] lg:w-[90%] bg-blue-900/30 shadow-[inset_2px_2px_8px_4px_rgba(255,255,255,0.3)] lg:shadow-none backdrop-blur-[10px] rounded-lg flex justify-center gap-5">
       <div class="flex-1 relative hidden lg:block">
         <div
           class="bg-center bg-cover bg-blue-500/30 h-full w-full rounded-lg relative z-[2] transition-all duration-500 ease-in-out"
@@ -134,10 +134,10 @@ watch(() => route.path, () => {
       </div>
       <div class="bg-transparent flex-1 py-[1.5rem] lg:py-[3rem] px-4">
         <div class="flex flex-col w-full lg:w-[70%] mx-auto">
-          <h1 class="text-[1.5rem] lg:text-[1.9rem] font-bold tracking-tight transition-all duration-500 ease-in-out">
+          <h1 class="text-lg md:text-[1.5rem] lg:text-[1.9rem] font-bold tracking-tight transition-all duration-500 ease-in-out">
             {{ isSignUp ? 'Create an account' : 'Welcome back' }}
           </h1>
-          <p class="text-[80%] pt-3 transition-all duration-500 ease-in-out">
+          <p class="text-[70%] md:text-[80%] pt-3 transition-all duration-500 ease-in-out">
             {{ isSignUp ? 'Already have an account?' : "Don't have an account?" }}
             <RouterLink :to="isSignUp ? '/login' : '/sign-up'"
               class="text-blue-500 underline transition-all duration-500 ease-in-out">
@@ -161,7 +161,7 @@ watch(() => route.path, () => {
                   </div>
                 </div>
 
-                <span class="text-sm text-gray-300 flex items-center gap-2">
+                <span class="text-[10px] md:text-xs text-gray-300 flex items-center gap-2">
                   <template v-if="imagePreview">
                     <span class="flex items-center gap-1">
                       <v-icon name="bi-pencil-fill" scale="0.8"></v-icon>
@@ -191,10 +191,10 @@ watch(() => route.path, () => {
             <div class="relative bg-white/20 px-5 py-2 rounded-[4px] w-full">
               <input v-if="showPassword" type="text" v-model="formValues.password"
                 :placeholder="isSignUp ? 'Enter your password' : 'Password'" required
-                class="bg-transparent text-[80%] border-0 outline-none w-[80%]" />
+                class="bg-transparent text-[70%] md:text-[80%] border-0 outline-none w-[80%]" />
               <input v-else type="password" v-model="formValues.password"
                 :placeholder="isSignUp ? 'Enter your password' : 'Password'" required
-                class="bg-transparent text-[80%] border-0 outline-none w-[80%]" />
+                class="bg-transparent text-[70%] md:text-[80%] border-0 outline-none w-[80%]" />
               <span @click="toggleShowPassword" class="absolute right-[20px] cursor-pointer">
                 <v-icon v-if="showPassword" name="bi-eye-fill" scale="1"></v-icon>
                 <v-icon v-else name="bi-eye-slash-fill" scale="1"></v-icon>

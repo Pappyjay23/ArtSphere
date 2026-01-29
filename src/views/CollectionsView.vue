@@ -30,7 +30,9 @@ const featuredCollections = [
     userEmail: 'sarah@example.com',
     userName: 'sarahj',
     userFullName: 'Sarah Johnson',
-    userProfileImage: 'https://i.pravatar.cc/150?img=5',
+    userProfileImage: {
+      url: 'https://i.pravatar.cc/150?img=5',
+    },
     createdAt: Timestamp.fromDate(new Date('2025-01-22')),
     images: [
       {
@@ -63,7 +65,9 @@ const featuredCollections = [
     userEmail: 'john@example.com',
     userName: 'johnd',
     userFullName: 'John Doe',
-    userProfileImage: 'https://i.pravatar.cc/150?img=12',
+    userProfileImage: {
+      url: 'https://i.pravatar.cc/150?img=12',
+    },
     createdAt: Timestamp.fromDate(new Date('2025-01-23')),
     images: [
       {
@@ -181,48 +185,30 @@ const confirmDelete = async () => {
 <template>
   <div class="py-4">
     <div class="mb-8">
-      <h1 class="text-2xl font-semibold tracking-tight mb-2">Collections</h1>
-      <p class="text-gray-400">Explore amazing collections from our creators</p>
+      <h1 class="text-xl md:text-2xl font-semibold tracking-tight mb-2">Collections</h1>
+      <p class="text-gray-400 text-xs md:text-sm">Explore amazing collections from our creators</p>
     </div>
 
     <!-- Collections List -->
-    <CollectionsList
-      :collections="allCollections"
-      :hasCollections="hasCollections"
-      :currentUser="user"
-      :isCollectionsRoute="true"
-      @openCollectionSlider="openCollectionSlider"
-      @deleteCollection="handleDeleteCollection"
-    />
+    <CollectionsList :collections="allCollections" :hasCollections="hasCollections" :currentUser="user"
+      :isCollectionsRoute="true" @openCollectionSlider="openCollectionSlider"
+      @deleteCollection="handleDeleteCollection" />
 
     <!-- Confirm Delete Modal -->
-    <ConfirmDeleteModal
-      :show="showConfirmDeleteModal"
-      :loading="loading"
-      :message="
-        collectionToDelete
-          ? 'Are you sure you want to delete this collection?'
-          : 'Are you sure you want to delete this image?'
-      "
-      @confirm="confirmDelete"
-      @cancel="cancelDeleteCollection"
-    />
+    <ConfirmDeleteModal :show="showConfirmDeleteModal" :loading="loading" :message="collectionToDelete
+      ? 'Are you sure you want to delete this collection?'
+      : 'Are you sure you want to delete this image?'
+      " @confirm="confirmDelete" @cancel="cancelDeleteCollection" />
 
     <!-- Slider Modal -->
-    <div
-      v-if="showSlider"
-      class="fixed inset-0 bg-black/95 z-40 flex flex-col items-center justify-center"
-      @click.self="closeSlider"
-    >
+    <div v-if="showSlider" class="fixed inset-0 bg-black/95 z-40 flex flex-col items-center justify-center"
+      @click.self="closeSlider">
       <div class="w-full max-w-6xl p-4">
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
           <div class="flex items-center space-x-3">
-            <img
-              :src="selectedCollection?.userProfileImage"
-              :alt="selectedCollection?.name"
-              class="w-12 h-12 rounded-full object-cover"
-            />
+            <img :src="selectedCollection?.userProfileImage.url" :alt="selectedCollection?.name"
+              class="w-12 h-12 rounded-full object-cover" />
             <div>
               <h3 class="font-semibold text-xl">{{ selectedCollection?.userFullName }}</h3>
               <p class="text-sm text-gray-400">@{{ selectedCollection?.userName }}</p>
@@ -238,14 +224,8 @@ const confirmDelete = async () => {
 
         <!-- Slider -->
         <div class="h-[70vh]">
-          <Slider
-            v-if="selectedCollection"
-            :images="selectedCollection.images"
-            :imageTags="selectedCollection.tags"
-            :currentUser="user"
-            :collectionOwnerEmail="selectedCollection.userEmail"
-            @deleteImage="deleteImage"
-          />
+          <Slider v-if="selectedCollection" :images="selectedCollection.images" :imageTags="selectedCollection.tags"
+            :currentUser="user" :collectionOwnerEmail="selectedCollection.userEmail" @deleteImage="deleteImage" />
         </div>
       </div>
     </div>

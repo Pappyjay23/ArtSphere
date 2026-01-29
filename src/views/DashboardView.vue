@@ -287,10 +287,10 @@ const stats = computed(() => [
         class="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover"
       />
       <div>
-        <h1 class="text-lg md:text-2xl font-semibold mb-2">
+        <h1 class="text-sm md:text-lg font-semibold mb-2">
           Welcome back, {{ user?.displayName }}!
         </h1>
-        <p class="text-gray-400 text-[80%] md:text-base">
+        <p class="text-gray-400 text-[60%] md:text-[80%]">
           Here's what's happening with your collections
         </p>
       </div>
@@ -360,13 +360,13 @@ const stats = computed(() => [
         <div class="flex justify-between items-center mb-6">
           <div class="flex items-center space-x-3">
             <img
-              :src="selectedCollection?.userProfileImage"
+              :src="selectedCollection?.userProfileImage.url"
               :alt="selectedCollection?.name"
               class="w-12 h-12 rounded-full object-cover"
             />
             <div>
-              <h3 class="font-semibold text-xl">{{ selectedCollection?.userFullName }}</h3>
-              <p class="text-sm text-gray-400">@{{ selectedCollection?.userName }}</p>
+              <h3 class="font-semibold text-base">{{ selectedCollection?.userFullName }}</h3>
+              <p class="text-xs text-gray-400">@{{ selectedCollection?.userName }}</p>
             </div>
           </div>
           <div>
@@ -374,7 +374,7 @@ const stats = computed(() => [
             <p class="text-sm text-gray-400">{{ selectedCollection?.description }}</p>
           </div>
           <button @click="closeSlider" class="p-2 hover:bg-white/10 rounded-full transition-colors">
-            <v-icon name="bi-x-lg" scale="1.5"></v-icon>
+            <v-icon name="bi-x-lg" scale="1.2"></v-icon>
           </button>
         </div>
 

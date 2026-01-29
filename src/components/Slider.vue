@@ -123,9 +123,9 @@ onMounted(() => {
     <!-- Navigation Buttons -->
     <button v-if="currentIndex > 0" @click="prevSlide" class="nav-button left-6 group/btn">
       <div
-        class="bg-white/10 backdrop-blur-md p-4 rounded-full transition-all duration-300 group-hover/btn:bg-white/20"
+        class="bg-white/10 backdrop-blur-md h-10 w-10 flex justify-center items-center rounded-full transition-all duration-300 group-hover/btn:bg-white/20"
       >
-        <v-icon name="bi-chevron-left" scale="1.5"></v-icon>
+        <v-icon name="bi-chevron-left" scale="1"></v-icon>
       </div>
     </button>
 
@@ -135,9 +135,9 @@ onMounted(() => {
       class="nav-button right-6 group/btn"
     >
       <div
-        class="bg-white/10 backdrop-blur-md p-4 rounded-full transition-all duration-300 group-hover/btn:bg-white/20"
+        class="bg-white/10 backdrop-blur-md h-10 w-10 flex justify-center items-center rounded-full transition-all duration-300 group-hover/btn:bg-white/20"
       >
-        <v-icon name="bi-chevron-right" scale="1.5"></v-icon>
+        <v-icon name="bi-chevron-right" scale="1"></v-icon>
       </div>
     </button>
 

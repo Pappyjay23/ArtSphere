@@ -21,7 +21,7 @@ const collections = ref([])
 const useCollections = () => {
   const error = ref(null)
   const loading = ref(false)
-  const { uploadImage } = useImageUpload()
+  const { uploadImage, deleteRemoteImage } = useImageUpload()
 
   const createCollection = async (user, collectionData) => {
     error.value = null
@@ -41,8 +41,12 @@ const useCollections = () => {
       const imageUrls = await Promise.all(
         collectionData.images.map(async (image) => {
           try {
-            const url = await uploadImage(image.file)
-            return { id: image.id, url }
+            const uploaded = await uploadImage(image.file)
+            return {
+              id: image.id,
+              url: uploaded.url,
+              publicId: uploaded.publicId,
+            }
           } catch (imgError) {
             console.error('Image upload failed:', imgError)
             throw new Error('Failed to upload collection image')
@@ -92,53 +96,47 @@ const useCollections = () => {
     loading.value = true
 
     try {
-      // Fetch user details
       const userDocId = user.email.replace(/\./g, ',')
       const userRef = doc(db, 'users', userDocId)
       const userDoc = await getDoc(userRef)
-      if (!userDoc.exists()) {
-        throw new Error('User not found')
-      }
-      const userData = userDoc.data()
 
-      // Upload new images
+      if (!userDoc.exists()) throw new Error('User not found')
+      const userData = userDoc.data()
+      const oldCollection = userData.collectionsArray.find((c) => c.id === collectionData.id)
+
+      // 1. UPLOAD NEW IMAGES
       const existingImages = collectionData.images.filter((image) => image.url)
       const newImages = collectionData.images.filter((image) => !image.url)
+
       const newImageUrls = await Promise.all(
         newImages.map(async (image) => {
-          try {
-            const url = await uploadImage(image.file)
-            return { id: image.id, url }
-          } catch (imgError) {
-            console.error('Image upload failed:', imgError)
-            throw new Error('Failed to upload collection image')
+          const uploaded = await uploadImage(image.file)
+          return {
+            id: image.id,
+            url: uploaded.url,
+            publicId: uploaded.publicId,
           }
         }),
       )
 
-      // Update collection document
+      // 2. UPDATE DOCUMENTS
       const updatedCollection = {
         ...collectionData,
         images: [...existingImages, ...newImageUrls],
-        tags: [
-          ...(collectionData.tags || []),
-          ...newImages.map((image, index) => ({
-            id: image.id,
-            tag: collectionData.tags[index].tag,
-          })),
-        ],
       }
 
       await setDoc(doc(db, 'collections', collectionData.id), updatedCollection)
 
-      // Update user's collections array and stats
       const updatedCollectionsArray = userData.collectionsArray.map((collection) =>
         collection.id === collectionData.id ? updatedCollection : collection,
       )
 
+      // Calculate image count difference for stats
+      const imageDiff = updatedCollection.images.length - oldCollection.images.length
+
       await updateDoc(userRef, {
         collectionsArray: updatedCollectionsArray,
-        'stats.totalImages': increment(newImageUrls.length),
+        'stats.totalImages': increment(imageDiff),
       })
 
       return collectionData.id
@@ -155,38 +153,43 @@ const useCollections = () => {
     loading.value = true
 
     try {
-      // Fetch user details
       const userDocId = user.email.replace(/\./g, ',')
       const userRef = doc(db, 'users', userDocId)
       const userDoc = await getDoc(userRef)
-      if (!userDoc.exists()) {
-        throw new Error('User not found')
-      }
+
+      if (!userDoc.exists()) throw new Error('User not found')
       const userData = userDoc.data()
 
-      // Delete collection document
+      // 1. Find the collection data BEFORE deleting it
+      const collectionToDeleteData = userData.collectionsArray.find((c) => c.id === collectionId)
+
+      if (!collectionToDeleteData) throw new Error('Collection data not found')
+
+      // 2. Log the IDs for your manual cleanup script (Optional)
+      collectionToDeleteData.images.forEach((img) => {
+        console.log('Marking for cleanup:', img.publicId)
+      })
+
+      // 3. DELETE FROM FIRESTORE
       await deleteDoc(doc(db, 'collections', collectionId))
 
-      // Update user's collections array and stats
+      // 4. UPDATE USER STATS
       const updatedCollectionsArray = userData.collectionsArray.filter(
         (collection) => collection.id !== collectionId,
       )
+
       await updateDoc(userRef, {
         collectionsArray: updatedCollectionsArray,
         'stats.totalCollections': increment(-1),
-        'stats.totalImages': increment(
-          -userData.collectionsArray.find((collection) => collection.id === collectionId).images
-            .length,
-        ),
+        // Fix: Now collectionToDeleteData is defined so .length works
+        'stats.totalImages': increment(-collectionToDeleteData.images.length),
       })
 
-      // Update total collections document if it exists
+      // 5. UPDATE GLOBAL STATS
       const totalCollectionsRef = doc(db, 'stats', 'totalCollections')
       const totalCollectionsDoc = await getDoc(totalCollectionsRef)
       if (totalCollectionsDoc.exists()) {
-        await updateDoc(totalCollectionsRef, {
-          count: increment(-1),
-        })
+        await updateDoc(totalCollectionsRef, { count: increment(-1) })
       }
     } catch (err) {
       error.value = err.message

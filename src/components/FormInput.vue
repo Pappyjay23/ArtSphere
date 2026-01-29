@@ -15,7 +15,7 @@ const emit = defineEmits(['update:modelValue'])
     :value="modelValue"
     @input="emit('update:modelValue', $event.target.value)"
     required
-    class="bg-white/20 px-5 py-2 rounded-[4px] text-[80%] border-0 outline-none w-full"
+    class="bg-white/20 px-5 py-2 rounded-[4px] text-[70%] md:text-[80%] border-0 outline-none w-full"
   />
 </template>
 

@@ -63,57 +63,45 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <nav
-    :class="[
-      'fixed top-0 left-0 right-0 z-[40] transition-all duration-300 py-3 md:px-6 px-4',
-      isScrolled ? 'bg-black/70 backdrop-blur-xl shadow-lg' : 'bg-transparent',
-    ]"
-  >
+  <nav :class="[
+    'fixed top-0 left-0 right-0 z-[40] transition-all duration-300 py-3 md:px-6 px-4',
+    isScrolled ? 'bg-black/70 backdrop-blur-xl shadow-lg' : 'bg-transparent',
+  ]">
     <div class="max-w-[1440px] mx-auto flex justify-between items-center">
       <!-- Menu Button -->
-      <button
-        @click="toggleMenu"
-        class="relative group overflow-hidden nav-menu-btn z-[60] w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full backdrop-blur-md text-white bg-purple-500/10"
-      >
+      <button @click="toggleMenu"
+        class="relative group overflow-hidden nav-menu-btn z-[60] w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full backdrop-blur-md text-white bg-purple-500/10">
         <!-- Icon Container -->
         <div class="relative w-5 h-3 lg:w-6 lg:h-5 flex items-center z-[2]">
           <!-- Menu Lines -->
-          <span
-            class="absolute h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-500 ease-in-out"
-            :class="isMenuOpen ? 'rotate-45 w-full' : '-translate-y-2 w-[40%]'"
-          ></span>
+          <span class="absolute h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-500 ease-in-out"
+            :class="isMenuOpen ? 'rotate-45 w-full' : '-translate-y-2 w-[40%]'"></span>
 
-          <span
-            class="absolute h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-300 ease-in-out"
-            :class="isMenuOpen ? 'opacity-0 translate-x-3 w-full' : 'opacity-100 w-full'"
-          ></span>
+          <span class="absolute h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-300 ease-in-out"
+            :class="isMenuOpen ? 'opacity-0 translate-x-3 w-full' : 'opacity-100 w-full'"></span>
 
-          <span
-            class="absolute h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-500 ease-in-out"
-            :class="isMenuOpen ? '-rotate-45 w-full' : 'translate-y-2 w-[60%]'"
-          ></span>
+          <span class="absolute h-[1px] lg:h-[2px] rounded-lg bg-white transition-all duration-500 ease-in-out"
+            :class="isMenuOpen ? '-rotate-45 w-full' : 'translate-y-2 w-[60%]'"></span>
         </div>
 
         <!-- Hover Effects -->
         <div
-          class="absolute inset-0 z-[1] bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        ></div>
+          class="absolute inset-0 z-[1] bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        </div>
 
         <div
-          class="absolute inset-0 z-[1] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-        ></div>
+          class="absolute inset-0 z-[1] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent">
+        </div>
 
         <div
-          class="absolute inset-0 z-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-blue-500/50 to-purple-500/50 blur-xl"
-        ></div>
+          class="absolute inset-0 z-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-blue-500/50 to-purple-500/50 blur-xl">
+        </div>
       </button>
 
       <!-- Logo Center -->
-      <RouterLink
-        to="/"
+      <RouterLink to="/"
         class="text-[1.5rem] md:text-[2rem] flex items-center gap-2 opacity-85 transition-all duration-300 ease-in-out hover:opacity-100 z-[60]"
-        @click="closeMenu"
-      >
+        @click="closeMenu">
         <img :src="Logo" alt="Logo" class="h-[25px] md:h-[35px] w-auto" />
         <span class="font-medium tracking-tight"> ArtSphere </span>
       </RouterLink>
@@ -121,99 +109,69 @@ onUnmounted(() => {
       <!-- User Profile Button -->
       <div class="relative group">
         <button
-          class="relative overflow-hidden nav-menu-btn z-[60] w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full backdrop-blur-md text-white bg-purple-500/10"
-        >
+          class="relative overflow-hidden nav-menu-btn z-[60] w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full backdrop-blur-md text-white bg-purple-500/10">
           <div class="relative w-full h-full flex items-center justify-center z-[2] p-1">
-            <img
-              v-if="user?.photoURL"
-              :src="user.photoURL"
-              :alt="user.displayName"
-              class="w-full h-full object-cover rounded-full"
-            />
+            <img v-if="user?.photoURL" :src="user.photoURL" :alt="user.displayName"
+              class="w-full h-full object-cover rounded-full" />
             <v-icon v-else name="bi-person-fill" scale="1.5" class="opacity-85" />
           </div>
 
           <!-- Hover Effects (same as before) -->
           <div
-            class="absolute inset-0 z-[1] bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          ></div>
+            class="absolute inset-0 z-[1] bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          </div>
           <div
-            class="absolute inset-0 z-[1] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-          ></div>
+            class="absolute inset-0 z-[1] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent">
+          </div>
           <div
-            class="absolute inset-0 z-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-blue-500/50 to-purple-500/50 blur-xl"
-          ></div>
+            class="absolute inset-0 z-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-blue-500/50 to-purple-500/50 blur-xl">
+          </div>
         </button>
 
         <!-- Username Tooltip -->
-        <div
-          v-if="user?.displayName"
-          class="absolute top-full right-[-10px] mt-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 shadow-[inset_3px_3px_10px_rgba(0,0,0,0.5)] backdrop-blur-md px-3 py-1.5 rounded-lg text-[80%] md:text-sm"
-        >
+        <div v-if="user?.displayName"
+          class="absolute top-full right-[-10px] mt-2 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20 shadow-[inset_3px_3px_10px_rgba(0,0,0,0.5)] backdrop-blur-md px-3 py-1.5 rounded-lg text-[60%]">
           {{ user.displayName }}
         </div>
       </div>
     </div>
 
     <!-- Full Screen Menu -->
-    <div
-      class="fixed top-0 left-0 min-h-screen inset-0 z-[50] transition-all duration-500"
-      :class="
-        isMenuOpen
-          ? 'opacity-100 visible'
-          : 'opacity-0 lg:opacity-100 invisible pointer-events-none'
-      "
-      style="margin-top: 0"
-    >
+    <div class="fixed top-0 left-0 min-h-screen inset-0 z-[50] transition-all duration-500" :class="isMenuOpen
+      ? 'opacity-100 visible'
+      : 'opacity-0 lg:opacity-100 invisible pointer-events-none'
+      " style="margin-top: 0">
       <!-- Backdrop -->
       <div
         class="fixed top-0 left-0 min-h-screen inset-0 bg-black/90 backdrop-blur-xl transition-all duration-1000 delay-[430] ease-in-out"
-        :class="
-          isMenuOpen
-            ? 'opacity-100 scale-[2] h-full w-full lg:h-[200vh] lg:w-[200vh]'
-            : 'opacity-100 h-[300vh] w-[300vh] translate-x-[-50%] translate-y-[-50%] rounded-full origin-top-left scale-[0] delay-500'
-        "
-      ></div>
+        :class="isMenuOpen
+          ? 'opacity-100 scale-[2] h-full w-full lg:h-[200vh] lg:w-[200vh]'
+          : 'opacity-100 h-[300vh] w-[300vh] translate-x-[-50%] translate-y-[-50%] rounded-full origin-top-left scale-[0] delay-500'
+          "></div>
 
       <!-- Menu Content -->
       <div class="relative h-full flex flex-col items-center justify-center">
-        <div
-          class="flex flex-col items-center gap-8 transition-all duration-700 delay-200 ease-in-out"
-          :class="isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'"
-        >
-          <RouterLink
-            v-for="(link, index) in navigationLinks"
-            :key="index"
-            :to="link.to"
-            @click="closeMenu"
-            class="nav-link text-3xl font-light tracking-wider"
-            :class="[{ active: route.path === link.to }]"
-          >
+        <div class="flex flex-col items-center gap-8 transition-all duration-700 delay-200 ease-in-out"
+          :class="isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'">
+          <RouterLink v-for="(link, index) in navigationLinks" :key="index" :to="link.to" @click="closeMenu"
+            class="nav-link text-3xl font-light tracking-wider" :class="[{ active: route.path === link.to }]">
             {{ link.name }}
           </RouterLink>
 
           <!-- Auth Link -->
           <template v-if="authLink.to">
-            <RouterLink
-              :to="authLink.to"
-              @click="closeMenu"
-              class="nav-link text-3xl font-light tracking-wider"
-              :class="authLink.class"
-            >
+            <RouterLink :to="authLink.to" @click="closeMenu" class="nav-link text-3xl font-light tracking-wider"
+              :class="authLink.class">
               {{ authLink.name }}
             </RouterLink>
           </template>
           <template v-else>
-            <button
-              @click="
-                () => {
-                  authLink.action()
-                  closeMenu()
-                }
-              "
-              class="nav-link text-3xl font-light tracking-wider"
-              :class="authLink.class"
-            >
+            <button @click="
+              () => {
+                authLink.action()
+                closeMenu()
+              }
+            " class="nav-link text-3xl font-light tracking-wider" :class="authLink.class">
               {{ authLink.name }}
             </button>
           </template>
@@ -229,7 +187,8 @@ onUnmounted(() => {
 <style scoped>
 .navbar {
   position: relative;
-  z-index: 30; /* Ensure the navbar is below the slider */
+  z-index: 30;
+  /* Ensure the navbar is below the slider */
 }
 
 .nav-link {

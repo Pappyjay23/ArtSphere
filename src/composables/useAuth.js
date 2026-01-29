@@ -37,39 +37,45 @@ const useAuth = () => {
     loading.value = true
 
     try {
-      // Validate inputs
       if (!email || !password || !fullname || !username) {
         throw new Error('All fields are required')
       }
 
-      // Format email to be used as document ID (replace . with , for valid document ID)
       const docId = email.replace(/\./g, ',')
 
-      // Create auth user first
+      // 1. Create Auth User
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const newUser = userCredential.user
 
-      if (!newUser) {
-        throw new Error('Failed to create user account')
-      }
-
-      // Upload image if exists
-      let imageUrl = null
+      // 2. Upload Profile Image to Cloudinary folder 'profiles'
+      let profileImageData = null
       if (profileImage) {
         try {
-          imageUrl = await uploadImage(profileImage)
+          profileImageData = await uploadImage(profileImage, 'profiles')
         } catch (imgError) {
-          console.error('Image upload failed:', imgError)
+          console.error('Profile image upload failed:', imgError)
+          // Continue signup even if image fails
         }
       }
 
-      // Create user document in Firestore using email as ID
+      // 3. Update Auth Profile (Internal Firebase State)
+      await updateProfile(newUser, {
+        displayName: fullname,
+        photoURL: profileImageData?.url || null,
+      })
+
+      // 4. Save User Data to Firestore (Database State)
       const userData = {
-        uid: newUser.uid, // Keep UID for reference
+        uid: newUser.uid,
         fullname,
         username,
         email,
-        profileImage: imageUrl,
+        profileImage: profileImageData
+          ? {
+              url: profileImageData.url,
+              publicId: profileImageData.publicId,
+            }
+          : null,
         createdAt: new Date().toISOString(),
         followers: 0,
         stats: {
@@ -80,14 +86,7 @@ const useAuth = () => {
         },
       }
 
-      // Set the user document in Firestore using email as document ID
       await setDoc(doc(db, 'users', docId), userData)
-
-      // Update auth profile
-      await updateProfile(newUser, {
-        displayName: fullname,
-        photoURL: imageUrl,
-      })
 
       error.value = null
       return newUser
@@ -103,7 +102,6 @@ const useAuth = () => {
   const login = async (email, password) => {
     error.value = null
     loading.value = true
-
     try {
       const { user: authUser } = await signInWithEmailAndPassword(auth, email, password)
       localStorage.setItem('user', JSON.stringify(authUser))
@@ -127,18 +125,10 @@ const useAuth = () => {
     } catch (err) {
       console.error('Logout error:', err)
       error.value = err.message
-      throw err
     }
   }
 
-  return {
-    user,
-    error,
-    loading,
-    signup,
-    login,
-    logout,
-  }
+  return { user, error, loading, signup, login, logout }
 }
 
 export default useAuth

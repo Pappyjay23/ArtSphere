@@ -93,18 +93,18 @@ const isFirebaseCollection = (collection) => {
         <!-- Top Section with Add Images Button -->
         <div class="flex justify-between gap-3 items-start mb-6">
           <!-- Collection Info -->
-          <div class="flex items-start space-x-4">
+          <div class="flex items-center md:items-start space-x-2">
             <div class="relative overflow-hidden rounded-xl">
               <img
-                :src="collection.userProfileImage"
+                :src="collection.userProfileImage.url"
                 :alt="collection.userName"
                 class="w-12 h-12 rounded-xl object-cover transform transition-transform duration-500 ease-in-out scale-[1] group-hover:scale-[1.2]"
               />
               <div class="absolute inset-0 border border-white/50 rounded-xl"></div>
             </div>
             <div class="flex flex-col gap-1">
-              <span class="text-[90%] font-medium">{{ collection.userFullName }}</span>
-              <span class="text-[80%]">@{{ collection.userName }}</span>
+              <span class="text-[80%] font-medium hidden md:block">{{ collection.userFullName }}</span>
+              <span class="text-[70%]">@{{ collection.userName }}</span>
             </div>
           </div>
 
@@ -141,7 +141,7 @@ const isFirebaseCollection = (collection) => {
         </div>
 
         <!-- Stats -->
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center justify-between flex-wrap gap-2 mb-6">
           <div class="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-lg">
             <v-icon name="bi-images" scale="1" class="text-blue-400"></v-icon>
             <span class="text-xs text-white/80"
